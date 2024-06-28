@@ -1,80 +1,82 @@
-'use client'
+"use client";
+import React, { useState } from "react";
 
-import { useState } from 'react'
-import decodeICO from 'decode-ico'
+export default function ConvertToIco() {
+  const [file, setFile] = useState<File | null>(null);
+  const [sizes, setSizes] = useState<number[]>([16, 32, 48]);
+  const [loading, setLoading] = useState(false);
 
-export default function Home() {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setFile(e.target.files[0]);
+    }
+  };
 
-  const [icons, setIcons] = useState<any[]>([])
+  const handleSizesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const sizeArray = e.target.value
+      .split(",")
+      .map((size) => parseInt(size.trim()));
+    setSizes(sizeArray);
+  };
 
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (!file) return
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!file) return;
 
-    const arrayBuffer = await file.arrayBuffer()
-    const uint8Array = new Uint8Array(arrayBuffer)
-    const decodedIcons = decodeICO(uint8Array)
+    setLoading(true);
 
-    const processedIcons = await Promise.all(decodedIcons.map(processIcon))
-    setIcons(processedIcons)
-  }
+    try {
+      // Convert file to base64
+      const base64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = (error) => reject(error);
+      });
 
-  const processIcon = async (icon: any): Promise<any> => {
-    if (icon.type === 'png') {
-      return {
-        width: icon.width,
-        height: icon.height,
-        dataUrl: URL.createObjectURL(new Blob([icon.data], { type: 'image/png' })),
-        ogType: 'png'
+      const response = await fetch("/api/convert-to-ico", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          pngBase64: base64,
+          sizes: JSON.stringify(sizes),
+        }),
+      });
+
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "icon.ico";
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+      } else {
+        const error = await response.json();
+        console.error("Conversion failed:", error.message);
       }
-    } else {
-      // For BMP, we need to convert it to PNG
-      return convertBmpToPng(icon)
+    } catch (error) {
+      console.error("Error:", error);
+    } finally {
+      setLoading(false);
     }
-  }
-
-  const convertBmpToPng = (bmpData: any): any => {
-    const canvas = document.createElement('canvas')
-    canvas.width = bmpData.width
-    canvas.height = bmpData.height
-    const ctx = canvas.getContext('2d')
-    if (!ctx) throw new Error('Could not get canvas context')
-
-    ctx.putImageData(bmpData, 0, 0)
-
-    return {
-      width: bmpData.width,
-      height: bmpData.height,
-      dataUrl: canvas.toDataURL('image/png'),
-      ogType: 'bmp'
-    }
-  }
+  };
 
   return (
-    <main className="min-h-screen p-24">
-      <h1 className="text-4xl font-bold mb-8">ICO Viewer</h1>
+    <form onSubmit={handleSubmit}>
+      <input type="file" accept=".png" onChange={handleFileChange} />
       <input
-        type="file"
-        accept=".ico"
-        onChange={handleFileUpload}
-        className="mb-8"
+        type="text"
+        value={sizes.join(", ")}
+        onChange={handleSizesChange}
+        placeholder="Enter sizes (e.g., 16, 32, 48)"
       />
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {icons.map((icon, index) => (
-          <div key={index} className="border p-4 rounded-lg">
-            <h2 className="text-xl font-semibold mb-2">
-              {icon.width}x{icon.height}: {icon.ogType}
-            </h2>
-            <img
-              src={icon.dataUrl}
-              alt={`Icon ${index + 1}`}
-              className="mx-auto"
-              style={{ width: icon.width, height: icon.height }}
-            />
-          </div>
-        ))}
-      </div>
-    </main>
-  )
-
+      <button type="submit" disabled={!file || loading}>
+        {loading ? "Converting..." : "Convert to ICO"}
+      </button>
+    </form>
+  );
 }
