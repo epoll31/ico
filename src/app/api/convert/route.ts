@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
   const pngBuffer = Buffer.from(pngArrayBuffer);
 
   try {
-    const icoBuffer = await toIco([pngBuffer], { sizes });
+    const icoBuffer = await toIco([pngBuffer], { sizes, resize: true });
 
     // Create a Response with the ico buffer
     const response = new NextResponse(icoBuffer, {
