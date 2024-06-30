@@ -48,6 +48,16 @@ export default function Make() {
     }
   };
 
+  const downloadResultFile = () => {
+    if (!resultFile) return;
+
+    const url = URL.createObjectURL(resultFile);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "icon.ico";
+    link.click();
+  };
+
   return (
     <div className="p-4 flex flex-col gap-4">
       <h1 className="text-2xl font-bold mb-4">ICO Creator</h1>
@@ -93,7 +103,17 @@ export default function Make() {
         Create ICO
       </button>
 
-      {resultFile && <ViewIco icoFile={resultFile} />}
+      {resultFile && (
+        <>
+          <ViewIco icoFile={resultFile} />
+          <button
+            onClick={downloadResultFile}
+            className="bg-blue-500 text-white px-4 py-2 rounded w-fit"
+          >
+            Download
+          </button>
+        </>
+      )}
     </div>
   );
 }
