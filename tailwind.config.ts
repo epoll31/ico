@@ -7,7 +7,18 @@ const config: Config = {
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      animation: {
+        dash: "dash 20s linear infinite",
+      },
+      keyframes: {
+        dash: {
+          to: {
+            "stroke-dashoffset": "-300",
+          },
+        },
+      },
+    },
   },
   plugins: [],
 };
