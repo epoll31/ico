@@ -78,7 +78,8 @@ export default function DropZone({
       onDrop={handleDrop}
       onDragOver={handleDragOver}
     >
-      <AnimatedBorder />
+      {/* TODO: fix dashArray */}
+      <AnimatedBorder borderRadius={15} dashArray="10 10" />
       <div className="flex flex-col justify-center items-center  p-5 gap-2 ">
         <h1 className="text-4xl font-bold">Drop your image here</h1>
         <p className="text-xl">Or click to select an image</p>
