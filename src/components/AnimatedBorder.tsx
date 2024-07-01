@@ -1,5 +1,7 @@
+"use client";
+
 import cn from "@/utils/cn";
-import React from "react";
+import React, { useEffect, useRef } from "react";
 
 export default function AnimatedBorder({
   className,
@@ -16,6 +18,16 @@ export default function AnimatedBorder({
   animationDuration?: number;
   borderRadius?: number;
 }) {
+  const ref = useRef<SVGSVGElement>(null);
+  const [key, setKey] = React.useState(0);
+
+  useEffect(() => {
+    setKey(key === 0 ? 1 : 0);
+  }, [
+    ref.current?.getBoundingClientRect().width,
+    ref.current?.getBoundingClientRect().height,
+  ]);
+
   return (
     <svg
       className={cn(
@@ -23,6 +35,8 @@ export default function AnimatedBorder({
         className
       )}
       xmlns="http://www.w3.org/2000/svg"
+      ref={ref}
+      key={key}
     >
       <rect
         x={strokeWidth / 2}
