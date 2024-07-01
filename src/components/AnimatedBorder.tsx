@@ -5,7 +5,7 @@ export default function AnimatedBorder({
   className,
   strokeColor = "stroke-blue-500",
   strokeWidth = 5,
-  dashArray = "15.7 15 15.7 15",
+  dashArray = "15 15 15 15",
   animationDuration = 20,
   borderRadius = 10,
 }: {
@@ -27,8 +27,8 @@ export default function AnimatedBorder({
       <rect
         x={strokeWidth / 2}
         y={strokeWidth / 2}
-        width={`${100 - strokeWidth / 2}%`}
-        height={`${100 - strokeWidth / 2}%`}
+        width={`calc(100% - ${strokeWidth}px)`}
+        height={`calc(100% - ${strokeWidth}px)`}
         fill="none"
         className={cn("animate-dash", strokeColor)}
         strokeWidth={strokeWidth}
