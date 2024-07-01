@@ -79,10 +79,10 @@ export default function DropZone({
       onDragOver={handleDragOver}
     >
       <AnimatedBorder />
-      <div className="flex flex-col justify-center items-center  p-5 gap-5 ">
-        <h1 className="text-4xl font-bold">Drop your files here</h1>
-        <p className="text-xl">Or click to select files</p>
-        <Upload className="" />
+      <div className="flex flex-col justify-center items-center  p-5 gap-2 ">
+        <h1 className="text-4xl font-bold">Drop your image here</h1>
+        <p className="text-xl">Or click to select an image</p>
+        <Upload className="w-8 h-8 mx-4" />
       </div>
     </button>
   );
