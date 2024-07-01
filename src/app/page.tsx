@@ -1,6 +1,8 @@
 "use client";
 
+import AnimatedBorder from "@/components/AnimatedBorder";
 import DropZone from "@/components/DropZone";
+import Upload from "@/components/icons/upload";
 import NextImage from "next/image";
 import { useState } from "react";
 
@@ -52,7 +54,15 @@ export default function Page() {
         <p className="text-2xl">Lorem ipsum dolor sit amet.</p>
       </div>
       <div className="flex flex-col flex-1 h-full items-center justify-center gap-4">
-        <DropZone onChange={getFileInfo} />
+        <DropZone onChange={getFileInfo}>
+          <div className="flex flex-col justify-center items-center  p-5 gap-2 ">
+            <h1 className="text-4xl font-bold">Drop your image here</h1>
+            <p className="text-xl">Or click to select an image</p>
+            <Upload className="w-8 h-8 mx-4" />
+          </div>
+          {/* TODO: fix dashArray */}
+          <AnimatedBorder borderRadius={15} dashArray="10 10" />
+        </DropZone>
         {info && <NextImage {...info} />}
       </div>
     </div>

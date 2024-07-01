@@ -1,16 +1,16 @@
 "use client";
 
 import cn from "@/utils/cn";
-import AnimatedBorder from "./AnimatedBorder";
-import Upload from "./icons/upload";
 import { useEffect, useState } from "react";
 
 export default function DropZone({
   className,
   onChange,
+  children,
 }: {
   className?: string;
   onChange?: (file: File, type: "drop" | "click") => void;
+  children?: React.ReactNode;
 }) {
   const [result, setResult] = useState<{
     file: File;
@@ -78,13 +78,7 @@ export default function DropZone({
       onDrop={handleDrop}
       onDragOver={handleDragOver}
     >
-      {/* TODO: fix dashArray */}
-      <AnimatedBorder borderRadius={15} dashArray="10 10" />
-      <div className="flex flex-col justify-center items-center  p-5 gap-2 ">
-        <h1 className="text-4xl font-bold">Drop your image here</h1>
-        <p className="text-xl">Or click to select an image</p>
-        <Upload className="w-8 h-8 mx-4" />
-      </div>
+      {children}
     </button>
   );
 }
