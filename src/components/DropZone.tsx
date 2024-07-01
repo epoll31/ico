@@ -3,9 +3,21 @@
 import cn from "@/utils/cn";
 import AnimatedBorder from "./AnimatedBorder";
 import Upload from "./icons/upload";
+import { useEffect, useState } from "react";
 
-export default function DropZone({ className }: { className?: string }) {
-  const requestFile = async () => {
+export default function DropZone({
+  className,
+  onChange,
+}: {
+  className?: string;
+  onChange?: (file: File, type: "drop" | "click") => void;
+}) {
+  const [result, setResult] = useState<{
+    file: File;
+    type: "drop" | "click";
+  }>();
+
+  const requestFile = () => {
     const fileInput = document.createElement("input");
     fileInput.type = "file";
     fileInput.accept = "image/*";
@@ -17,14 +29,17 @@ export default function DropZone({ className }: { className?: string }) {
     fileInput.onchange = (e: any) => {
       const file = e.target.files[0] as File;
       if (file) {
-        console.log(file);
+        setResult({
+          file,
+          type: "click",
+        });
       } else {
         throw new Error("No file selected");
       }
     };
   };
 
-  const handleClick = () => {
+  const handleClick = async () => {
     requestFile();
   };
 
@@ -33,7 +48,10 @@ export default function DropZone({ className }: { className?: string }) {
     e.stopPropagation();
     const file = e.dataTransfer.files[0];
     if (file) {
-      console.log(file);
+      setResult({
+        file,
+        type: "drop",
+      });
     } else {
       throw new Error("No file selected");
     }
@@ -43,6 +61,12 @@ export default function DropZone({ className }: { className?: string }) {
     e.preventDefault();
     e.stopPropagation();
   };
+
+  useEffect(() => {
+    if (result) {
+      onChange?.(result.file, result.type);
+    }
+  }, [result]);
 
   return (
     <button
