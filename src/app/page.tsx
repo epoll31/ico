@@ -2,7 +2,7 @@
 
 import AnimatedBorder from "@/components/AnimatedBorder";
 import DropZone from "@/components/DropZone";
-import ImagePreview from "@/components/ImagePreview";
+import ImagePreview, { Sizes } from "@/components/ImagePreview";
 import Upload from "@/components/icons/upload";
 import { useState } from "react";
 
@@ -10,8 +10,8 @@ export default function Page() {
   const [file, setFile] = useState<File>();
 
   return (
-    <div className="flex flex-col justify-center items-center p-20">
-      <div className="flex  items-center justify-center">
+    <div className="flex flex-col justify-center items-center p-20 gap-10">
+      <div className="flex  items-center justify-center gap-10">
         <div className="flex flex-col flex-1 h-full items-center justify-center">
           <h1 className="text-4xl font-bold text-center">
             ICO's Better Than Ever
@@ -30,7 +30,12 @@ export default function Page() {
           </DropZone>
         </div>
       </div>
-      {file && <ImagePreview file={file} size={256} />}
+      <div className="flex flex-row flex-wrap gap-4 items-start">
+        {file &&
+          Sizes.map((size) => (
+            <ImagePreview key={size} file={file} size={size} />
+          ))}
+      </div>
     </div>
   );
 }
