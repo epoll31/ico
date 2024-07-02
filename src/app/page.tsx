@@ -2,12 +2,35 @@
 
 import AnimatedBorder from "@/components/AnimatedBorder";
 import DropZone from "@/components/DropZone";
-import SizedDropZones from "@/components/SizedDropZones";
+import SizedDropZones, { SizedFiles } from "@/components/SizedDropZones";
 import Upload from "@/components/icons/upload";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
+function spreadFiles(file: File) {
+  return {
+    16: file,
+    24: file,
+    32: file,
+    48: file,
+    64: file,
+    96: file,
+    128: file,
+    256: file,
+  };
+}
 export default function Page() {
   const [file, setFile] = useState<File>();
+  const [files, setFiles] = useState<SizedFiles>();
+  useEffect(() => {
+    if (file) {
+      setFiles(spreadFiles(file));
+    } else {
+      setFiles(undefined);
+    }
+  }, [file]);
+
+  const handleDownload = useCallback(() => {}, [files]);
+
   return (
     <div className="flex flex-col justify-center items-center p-20 gap-10">
       <div className="flex  items-center justify-center gap-10">
@@ -29,7 +52,25 @@ export default function Page() {
           </DropZone>
         </div>
       </div>
-      {file && <SizedDropZones defaultFile={file} />}
+      {files && (
+        <>
+          <SizedDropZones
+            files={files}
+            updateFile={(size, file) =>
+              setFiles({
+                ...files,
+                [size]: file,
+              })
+            }
+          />
+          <button
+            onClick={handleDownload}
+            className="bg-blue-500 text-white px-4 py-2 rounded-md"
+          >
+            Download
+          </button>
+        </>
+      )}
     </div>
   );
 }
