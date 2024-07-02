@@ -1,5 +1,6 @@
 import NextImage from "next/image";
 import { useEffect, useState } from "react";
+import AnimatedBorder from "./AnimatedBorder";
 
 export const Sizes = [16, 24, 32, 48, 64, 96, 128, 256] as const;
 export type Size = (typeof Sizes)[number];
@@ -67,5 +68,18 @@ export default function ImagePreview({ file, size }: ImagePreviewProps) {
     getFileInfo(file);
   }, [file]);
 
-  return info && <NextImage {...info} />;
+  return (
+    info && (
+      <div className="relative h-full border-[5px] border-blue-500 rounded-2xl p-5 flex gap-4">
+        <NextImage
+          className=""
+          {...info}
+          style={{ width: size, height: size }}
+        />
+        <h1 className="text-2xl font-semibold">
+          {size}x{size}
+        </h1>
+      </div>
+    )
+  );
 }

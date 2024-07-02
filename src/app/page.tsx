@@ -30,9 +30,9 @@ export default function Page() {
           </DropZone>
         </div>
       </div>
-      <div className="flex flex-row flex-wrap gap-4 items-start">
+      <div className="flex flex-wrap gap-4 items-start mt-10">
         {file &&
-          Sizes.map((size) => (
+          Sizes.toReversed().map((size) => (
             <ImagePreview key={size} file={file} size={size} />
           ))}
       </div>
