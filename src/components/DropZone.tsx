@@ -1,7 +1,4 @@
-"use client";
-
 import cn from "@/utils/cn";
-import { useEffect, useState } from "react";
 
 export default function DropZone({
   className,
@@ -12,11 +9,6 @@ export default function DropZone({
   onChange?: (file: File, type: "drop" | "click") => void;
   children?: React.ReactNode;
 }) {
-  const [result, setResult] = useState<{
-    file: File;
-    type: "drop" | "click";
-  }>();
-
   const requestFile = () => {
     const fileInput = document.createElement("input");
     fileInput.type = "file";
@@ -29,10 +21,7 @@ export default function DropZone({
     fileInput.onchange = (e: any) => {
       const file = e.target.files[0] as File;
       if (file) {
-        setResult({
-          file,
-          type: "click",
-        });
+        onChange?.(file, "click");
       } else {
         throw new Error("No file selected");
       }
@@ -48,10 +37,7 @@ export default function DropZone({
     e.stopPropagation();
     const file = e.dataTransfer.files[0];
     if (file) {
-      setResult({
-        file,
-        type: "drop",
-      });
+      onChange?.(file, "drop");
     } else {
       throw new Error("No file selected");
     }
@@ -61,12 +47,6 @@ export default function DropZone({
     e.preventDefault();
     e.stopPropagation();
   };
-
-  useEffect(() => {
-    if (result) {
-      onChange?.(result.file, result.type);
-    }
-  }, [result]);
 
   return (
     <button
