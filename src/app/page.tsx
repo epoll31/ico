@@ -4,7 +4,10 @@ import AnimatedBorder from "@/components/AnimatedBorder";
 import DropZone from "@/components/DropZone";
 import SizedDropZones, { SizedFiles } from "@/components/SizedDropZones";
 import Upload from "@/components/icons/upload";
+import resizeImage from "@/utils/resizeImage";
+import { Size } from "@/components/ImagePreview";
 import { useCallback, useEffect, useState } from "react";
+import { icoToSizedFiles } from "@/utils/decodeImage";
 
 function spreadFiles(file: File) {
   return {
@@ -18,18 +21,92 @@ function spreadFiles(file: File) {
     256: file,
   };
 }
+
+async function resizeFiles(files: Partial<SizedFiles>) {
+  const resizedFiles = files;
+
+  for (const [rawSize, file] of Object.entries(files)) {
+    if (file) {
+      const size = Number(rawSize) as Size;
+      resizedFiles[size] = (await resizeImage(file, size)) as File;
+    }
+  }
+
+  return resizedFiles;
+}
+
 export default function Page() {
   const [file, setFile] = useState<File>();
-  const [files, setFiles] = useState<SizedFiles>();
+  const [files, setFilesDirect] = useState<Partial<SizedFiles>>();
+
+  async function setFilesFromIco(file: File) {
+    const files = await icoToSizedFiles(file);
+    setFilesDirect(files); // TODO: maybe use setFiles?
+  }
+
   useEffect(() => {
     if (file) {
-      setFiles(spreadFiles(file));
+      // console.log("filetype", file.type);
+      if (file.type === "image/png") {
+        console.log("loading png");
+        setFiles(spreadFiles(file));
+      } else if (
+        file.type === "image/x-icon" ||
+        file.type === "image/vnd.microsoft.icon"
+      ) {
+        console.log("loading ico");
+        setFilesFromIco(file);
+      } else {
+        alert("Unsupported file type");
+      }
     } else {
       setFiles(undefined);
     }
   }, [file]);
 
-  const handleDownload = useCallback(() => {}, [files]);
+  async function setFiles(files: Partial<SizedFiles> | undefined) {
+    if (!files) {
+      return;
+    }
+
+    files = await resizeFiles(files);
+
+    setFilesDirect(files);
+  }
+  const downloadBlobAsFile = (blob: Blob, filename: string) => {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    link.click();
+  };
+  const handleDownloadRequest = useCallback(
+    async (files: Partial<SizedFiles>) => {
+      const pngFiles = Object.values(files).filter(Boolean) as File[];
+
+      const formData = new FormData();
+      pngFiles.forEach((file) => formData.append("files", file));
+
+      try {
+        const response = await fetch("/api/convert/files", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!response.ok) {
+          throw new Error("HTTP error: status code " + response.status);
+        }
+
+        const result = await response.blob();
+
+        downloadBlobAsFile(result, "icon.ico");
+        console.log("Success:", result);
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    },
+    [files]
+  );
 
   return (
     <div className="flex flex-col justify-center items-center p-20 gap-10">
@@ -64,7 +141,7 @@ export default function Page() {
             }
           />
           <button
-            onClick={handleDownload}
+            onClick={() => handleDownloadRequest(files)}
             className="bg-blue-500 text-white px-4 py-2 rounded-md"
           >
             Download
