@@ -1,5 +1,4 @@
-import { Size } from "@/components/ImagePreview";
-import { SizedFiles } from "@/components/SizedDropZones";
+import { Size, SizedURLs } from "@/lib/types";
 // import { assert } from "console";
 import decodeICO from "decode-ico";
 
@@ -40,19 +39,14 @@ const convertBmpToPng = (bmpData: any): FileInfo => {
   };
 };
 
-export async function icoToSizedFiles(
-  iconUrl: string
-): Promise<Partial<Record<Size, string>>> {
+export async function icoToImageUrls(iconUrl: string): Promise<SizedURLs> {
   try {
     const response = await fetch(iconUrl);
     const arrayBuffer = await response.arrayBuffer();
     const uint8Array = new Uint8Array(arrayBuffer);
     const decodedIcons = decodeICO(uint8Array);
-    console.log("decodedIcons", decodedIcons);
 
     const processedIcons = await Promise.all(decodedIcons.map(processIcon));
-
-    console.log("processedIcons", processedIcons);
 
     const files: Partial<Record<Size, string>> = {};
     for (const icon of processedIcons) {

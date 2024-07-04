@@ -1,28 +1,26 @@
-import ImagePreview, { Size, Sizes } from "./ImagePreview";
+import ImagePreview from "./ImagePreview";
 import DropZone from "./DropZone";
-
-export type SizedFiles = Record<Size, File>;
+import { Size, SizedURLs, Sizes } from "@/lib/types";
 
 export default function SizedDropZones({
-  files,
-  updateFile,
+  imageUrls,
+  updateImageUrl,
 }: {
-  files: Partial<Record<Size, string>>;
-  updateFile: (size: Size, url: string) => void;
+  imageUrls: SizedURLs;
+  updateImageUrl: (size: Size, imageUrl: string) => void;
 }) {
   return (
     <div className="flex flex-wrap gap-4 items-start mt-10">
       {Sizes.toReversed().map((size) => {
-        let file = files[size];
-        if (!file) return null;
-
-        if (typeof file === "string") {
-          // file = new File([file], `icon-${size}.png`, { type: "image/png" });
-        }
+        let imageUrl = imageUrls[size];
+        if (!imageUrl) return null;
 
         return (
-          <DropZone onChange={(file) => updateFile(size, file)} key={size}>
-            <ImagePreview file={file} size={size} />
+          <DropZone
+            onChange={(imageUrl) => updateImageUrl(size, imageUrl)}
+            key={size}
+          >
+            <ImagePreview file={imageUrl} size={size} />
           </DropZone>
         );
       })}

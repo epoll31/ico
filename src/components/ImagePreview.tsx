@@ -1,8 +1,6 @@
+import { Size } from "@/lib/types";
 import Image from "next/image";
 import { useMemo } from "react";
-
-export const Sizes = [16, 24, 32, 48, 64, 128, 256] as const;
-export type Size = (typeof Sizes)[number];
 
 export default function ImagePreview({
   file,

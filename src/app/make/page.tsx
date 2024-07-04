@@ -42,7 +42,6 @@ export default function Make() {
       const result = await response.blob();
 
       setResultFile(new File([result], "icon.ico", { type: "image/x-icon" }));
-      console.log("Success:", result);
     } catch (error) {
       console.error("Error:", error);
     }

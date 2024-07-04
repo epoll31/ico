@@ -7,9 +7,6 @@ export async function POST(req: NextRequest) {
   const pngFile = formData.get("pngFile") as File;
   const sizes = JSON.parse(formData.get("sizes") as string);
 
-  console.log("Converting to ICO...");
-  console.log(pngFile, sizes);
-
   const pngArrayBuffer = await pngFile.arrayBuffer();
   const pngBuffer = Buffer.from(pngArrayBuffer);
 

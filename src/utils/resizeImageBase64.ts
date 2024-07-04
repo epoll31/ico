@@ -1,9 +1,9 @@
 "use server";
 
-import { Size } from "@/components/ImagePreview";
+import { Size } from "@/lib/types";
 import sharp from "sharp";
 
-export default async function resizeImage(
+export default async function resizeImageBase64(
   base64Image: string,
   size: Size,
   fileName: string
