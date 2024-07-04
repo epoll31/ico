@@ -6,31 +6,32 @@ import SizedDropZones from "@/components/SizedDropZones";
 import Upload from "@/components/icons/upload";
 import { useCallback, useState } from "react";
 import { icoToImageUrls } from "@/utils/decodeImage";
-import { Size, SizedURLs } from "@/lib/types";
+import { Size, Sizes } from "@/lib/types";
 import downloadBlobAsFile from "@/utils/downloadBlobAsFile";
 import { resizeImageUrl, resizeImageUrls } from "@/utils/resizeImageUrls";
-
-function spreadSizes<T>(value: T): Record<Size, T> {
-  return {
-    16: value,
-    24: value,
-    32: value,
-    48: value,
-    64: value,
-    128: value,
-    256: value,
-  };
-}
+import spreadSizes from "@/utils/spreadSizes";
 
 export default function Page() {
-  const [imageUrls, setImageUrlsDirect] = useState<SizedURLs>({});
+  const [imageUrls, setImageUrlsDirect] = useState<Record<Size, string | null>>(
+    spreadSizes(null)
+  );
+  const [activeImageUrls, setActiveImageUrls] = useState<Record<Size, boolean>>(
+    spreadSizes(false)
+  );
 
   const setImageUrls = useCallback(
-    async (imageUrls: SizedURLs) => {
+    async (imageUrls: Record<Size, string | null>) => {
       if (imageUrls) {
-        setImageUrlsDirect(await resizeImageUrls(imageUrls));
+        const resizedImageUrls = await resizeImageUrls(imageUrls);
+        setImageUrlsDirect(resizedImageUrls);
+        const activeImageUrls: Record<Size, boolean> = spreadSizes(false);
+        Object.keys(resizedImageUrls).forEach((size) => {
+          activeImageUrls[Number(size) as Size] = true;
+        });
+        setActiveImageUrls(activeImageUrls);
       } else {
-        setImageUrlsDirect({});
+        setImageUrlsDirect(spreadSizes(null));
+        setActiveImageUrls(spreadSizes(false));
       }
     },
     [setImageUrlsDirect]
@@ -39,18 +40,46 @@ export default function Page() {
   const updateImageUrl = useCallback(
     async (size: Size, imageUrl: string) => {
       const resizedImageUrl = await resizeImageUrl(imageUrl, size);
+      // TODO: make sure that ICO's import the correct size
 
       setImageUrlsDirect((imageUrls) => ({
         ...imageUrls,
         [size]: resizedImageUrl,
       }));
+      setActiveImageUrls((activeImageUrls) => ({
+        ...activeImageUrls,
+        [size]: true,
+      }));
     },
     [setImageUrlsDirect]
   );
 
+  const updateActiveImageUrl = useCallback(
+    (size: Size, active: boolean) => {
+      setActiveImageUrls((activeImageUrls) => ({
+        ...activeImageUrls,
+        [size]: active,
+      }));
+    },
+    [setActiveImageUrls]
+  );
+
   const setImageUrlsFromIco = useCallback(
     async (imageUrl: string) => {
-      setImageUrlsDirect(await icoToImageUrls(imageUrl));
+      const iamgeUrlsFromIco = await icoToImageUrls(imageUrl);
+
+      const imageUrls = {
+        ...spreadSizes(null),
+        ...iamgeUrlsFromIco,
+      };
+      setImageUrlsDirect(imageUrls);
+
+      const activeImageUrls = spreadSizes(false);
+      Sizes.forEach((size) => {
+        activeImageUrls[size] = imageUrls[size] !== null;
+      });
+
+      setActiveImageUrls(activeImageUrls);
     },
     [setImageUrlsDirect]
   );
@@ -70,18 +99,17 @@ export default function Page() {
           alert("Unsupported file type");
         }
       } else {
-        setImageUrls({});
+        setImageUrls(spreadSizes(null));
+        setActiveImageUrls(spreadSizes(false));
       }
     },
     [setImageUrls, setImageUrlsFromIco]
   );
 
-  const handleDownloadRequest = useCallback(async (imageUrls: SizedURLs) => {
-    const imageUrlsAsArray = Object.values(imageUrls).filter(Boolean);
-
+  const handleDownloadRequest = useCallback(async () => {
     const blobs = await Promise.all(
-      imageUrlsAsArray.map(
-        async (imageUrl) => await fetch(imageUrl).then((res) => res.blob())
+      Sizes.filter((size) => imageUrls[size] && activeImageUrls[size]).map(
+        (size) => fetch(imageUrls[size] as string).then((res) => res.blob())
       )
     );
 
@@ -104,7 +132,7 @@ export default function Page() {
     } catch (error) {
       console.error("Error:", error);
     }
-  }, []);
+  }, [imageUrls, activeImageUrls]);
 
   return (
     <div className="flex flex-col justify-center items-center p-20 gap-10">
@@ -127,19 +155,21 @@ export default function Page() {
           </DropZone>
         </div>
       </div>
-      {imageUrls && (
-        <>
-          <SizedDropZones
-            imageUrls={imageUrls}
-            updateImageUrl={updateImageUrl}
-          />
-          <button
-            onClick={() => handleDownloadRequest(imageUrls)}
-            className="bg-blue-500 text-white px-4 py-2 rounded-md"
-          >
-            Download
-          </button>
-        </>
+
+      <SizedDropZones
+        imageUrls={imageUrls}
+        activeImageUrls={activeImageUrls}
+        updateImageUrl={updateImageUrl}
+        updateActiveImageUrls={updateActiveImageUrl}
+      />
+      {Sizes.filter((size) => imageUrls[size] && activeImageUrls[size]).length >
+        0 && (
+        <button
+          onClick={handleDownloadRequest}
+          className="bg-blue-500 text-white px-4 py-2 rounded-md"
+        >
+          Download
+        </button>
       )}
     </div>
   );

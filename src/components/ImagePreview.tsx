@@ -3,17 +3,22 @@ import Image from "next/image";
 import DropZone from "./DropZone";
 import cn from "@/utils/cn";
 import useTooltip from "./ToolTip";
+import Upload from "./icons/upload";
 
 export default function ImagePreview({
   className,
-  imageUrl,
   size,
+  imageUrl,
+  active,
   updateImageUrl,
+  updateActiveImageUrls,
 }: {
   className?: string;
-  imageUrl: string;
   size: Size;
-  updateImageUrl: (size: Size, imageUrl: string) => void;
+  imageUrl: string | null;
+  active: boolean;
+  updateImageUrl: (imageUrl: string) => void;
+  updateActiveImageUrls: (active: boolean) => void;
 }) {
   const { Tooltip, triggerRef } = useTooltip<HTMLButtonElement>({
     content: "Drag and drop an image here,\n or click to select an image",
@@ -26,22 +31,35 @@ export default function ImagePreview({
         className
       )}
     >
-      <DropZone
-        className="flex-1"
-        onChange={(imageUrl) => updateImageUrl(size, imageUrl)}
-        ref={triggerRef}
-      >
-        <Image
-          src={imageUrl}
-          alt={`icon ${size}x${size}`}
-          width={size}
-          height={size}
-          style={{ width: size, height: size }}
-        />
+      <DropZone className="flex-1" onChange={updateImageUrl} ref={triggerRef}>
+        {imageUrl ? (
+          <Image
+            src={imageUrl}
+            alt={`icon ${size}x${size}`}
+            width={size}
+            height={size}
+            style={{ width: size, height: size }}
+          />
+        ) : (
+          <div
+            style={{ width: size, height: size }}
+            className="flex items-center justify-center"
+          >
+            <Upload className="w-8 h-8" />
+          </div>
+        )}
       </DropZone>
       <p className="text-lg mt-2">
         {size}x{size}
       </p>
+      <input
+        type="checkbox"
+        checked={active}
+        disabled={!imageUrl}
+        onChange={(e) => {
+          updateActiveImageUrls(e.target.checked);
+        }}
+      />
       <Tooltip />
     </div>
   );

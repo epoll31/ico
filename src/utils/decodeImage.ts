@@ -1,6 +1,7 @@
-import { Size, SizedURLs } from "@/lib/types";
+import { Size } from "@/lib/types";
 // import { assert } from "console";
 import decodeICO from "decode-ico";
+import spreadSizes from "./spreadSizes";
 
 interface FileInfo {
   url: string;
@@ -9,8 +10,6 @@ interface FileInfo {
 }
 
 const processIcon = async (icon: any): Promise<FileInfo> => {
-  // assert(icon.width === icon.height, "All icons must be square");
-
   if (icon.type === "png") {
     return {
       url: URL.createObjectURL(new Blob([icon.data], { type: "image/png" })),
@@ -18,7 +17,6 @@ const processIcon = async (icon: any): Promise<FileInfo> => {
       fromType: "png",
     };
   } else {
-    // For BMP, we need to convert it to PNG
     return convertBmpToPng(icon);
   }
 };
@@ -39,7 +37,9 @@ const convertBmpToPng = (bmpData: any): FileInfo => {
   };
 };
 
-export async function icoToImageUrls(iconUrl: string): Promise<SizedURLs> {
+export async function icoToImageUrls(
+  iconUrl: string
+): Promise<Record<Size, string | null>> {
   try {
     const response = await fetch(iconUrl);
     const arrayBuffer = await response.arrayBuffer();
@@ -48,42 +48,14 @@ export async function icoToImageUrls(iconUrl: string): Promise<SizedURLs> {
 
     const processedIcons = await Promise.all(decodedIcons.map(processIcon));
 
-    const files: Partial<Record<Size, string>> = {};
+    const files: Record<Size, string | null> = spreadSizes(null);
     for (const icon of processedIcons) {
-      // const sizedFile = await urlToFile(icon.url, `icon-${icon.size}.png`);
-      // if (sizedFile) {
-      //   files[icon.size] = sizedFile;
-      // }
       files[icon.size] = icon.url;
     }
 
     return files;
   } catch (error) {
     console.error("Error processing icons:", error);
-    // Handle error appropriately
-    return {};
-  }
-}
-
-async function urlToFile(url: string, filename: string = "image.png") {
-  try {
-    // Fetch the image data from the URL
-    const response = await fetch(url);
-
-    // Check if the fetch was successful
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    // Convert the response to a Blob
-    const blob = await response.blob();
-
-    // Create a File object from the Blob
-    const file = new File([blob], filename, { type: "image/png" });
-
-    return file;
-  } catch (error) {
-    console.error("Error converting URL to File:", error);
-    return null;
+    return spreadSizes(null);
   }
 }
