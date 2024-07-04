@@ -33,6 +33,33 @@ const TooltipComponent: React.FC<TooltipComponentProps> = ({
   </div>
 );
 
+function TooltipPortal({
+  isVisible,
+  position,
+  content,
+}: {
+  isVisible: boolean;
+  position: { x: number; y: number };
+  content: string[];
+}) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+
+  return createPortal(
+    <TooltipComponent
+      isVisible={isVisible}
+      position={position}
+      content={content}
+    />,
+    document.body
+  );
+}
+
 export default function useTooltip<T extends HTMLElement>({
   content,
   delay = 500,
@@ -85,15 +112,9 @@ export default function useTooltip<T extends HTMLElement>({
     }
   }, [delay]);
 
-  const Tooltip = () =>
-    createPortal(
-      <TooltipComponent
-        isVisible={isVisible}
-        position={position}
-        content={lines}
-      />,
-      document.body
-    );
+  const Tooltip = () => (
+    <TooltipPortal isVisible={isVisible} position={position} content={lines} />
+  );
 
   return {
     triggerRef,
