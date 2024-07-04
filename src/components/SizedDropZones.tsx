@@ -1,5 +1,4 @@
 import ImagePreview from "./ImagePreview";
-import DropZone from "./DropZone";
 import { Size, SizedURLs, Sizes } from "@/lib/types";
 
 export default function SizedDropZones({
@@ -16,12 +15,12 @@ export default function SizedDropZones({
         if (!imageUrl) return null;
 
         return (
-          <DropZone
-            onChange={(imageUrl) => updateImageUrl(size, imageUrl)}
+          <ImagePreview
             key={size}
-          >
-            <ImagePreview file={imageUrl} size={size} />
-          </DropZone>
+            file={imageUrl}
+            size={size}
+            updateImageUrl={updateImageUrl}
+          />
         );
       })}
     </div>

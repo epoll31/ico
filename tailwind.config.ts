@@ -10,11 +10,20 @@ const config: Config = {
     extend: {
       animation: {
         dash: "dash 20s linear infinite",
+        wiggle: "wiggle 750ms ease-in-out infinite",
       },
       keyframes: {
         dash: {
           to: {
             "stroke-dashoffset": "-300",
+          },
+        },
+        wiggle: {
+          "0%, 100%": {
+            transform: "rotate(-1deg)",
+          },
+          "50%": {
+            transform: "rotate(1deg)",
           },
         },
       },
