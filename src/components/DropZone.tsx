@@ -1,5 +1,3 @@
-import cn from "@/utils/cn";
-
 export default function DropZone({
   className,
   onChange,
@@ -52,10 +50,7 @@ export default function DropZone({
 
   return (
     <button
-      className={cn(
-        " flex flex-col justify-center items-center relative",
-        className
-      )}
+      className={className}
       onClick={handleClick}
       onDrop={handleDrop}
       onDragOver={handleDragOver}
