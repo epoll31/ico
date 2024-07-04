@@ -7,8 +7,8 @@ export default function SizedDropZones({
   files,
   updateFile,
 }: {
-  files: Partial<SizedFiles>;
-  updateFile: (size: Size, file: File) => void;
+  files: Partial<Record<Size, string>>;
+  updateFile: (size: Size, url: string) => void;
 }) {
   return (
     <div className="flex flex-wrap gap-4 items-start mt-10">

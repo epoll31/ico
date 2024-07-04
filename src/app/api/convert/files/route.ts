@@ -1,19 +1,37 @@
 import { NextRequest, NextResponse } from "next/server";
 import toIco from "to-ico";
 
+async function fetchPng(url: string) {
+  console.log("fetchPng:", url);
+  const response = await fetch(url);
+
+  console.log("response.ok:", response.ok);
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  console.log("response:", response);
+
+  // const blob = await response.blob();
+  const arrayBuffer = await response.arrayBuffer();
+
+  console.log("arrayBuffer:", arrayBuffer);
+
+  return Buffer.from(arrayBuffer);
+}
+
 export async function POST(req: NextRequest) {
+  console.log("api/convert/files/route.ts");
   const formData = await req.formData();
 
-  const files = formData.getAll("files") as File[];
-  console.log("files:", files);
+  const urls = formData.getAll("urls") as Blob[];
+  console.log("urls:", urls);
 
-  const pngArrayBuffers = await Promise.all(
-    files.map((file) => file.arrayBuffer())
+  const pngBuffers = await Promise.all(
+    urls.map(async (blob) => {
+      return Buffer.from(await blob.arrayBuffer());
+    })
   );
-
-  console.log("pngArrayBuffers:", pngArrayBuffers);
-
-  const pngBuffers = pngArrayBuffers.map((buffer) => Buffer.from(buffer));
 
   console.log("pngBuffers:", pngBuffers);
 

@@ -6,7 +6,7 @@ export default function DropZone({
   children,
 }: {
   className?: string;
-  onChange?: (file: File, type: "drop" | "click") => void;
+  onChange?: (url: string, type: "drop" | "click") => void;
   children?: React.ReactNode;
 }) {
   const requestFile = () => {
@@ -21,7 +21,8 @@ export default function DropZone({
     fileInput.onchange = (e: any) => {
       const file = e.target.files[0] as File;
       if (file) {
-        onChange?.(file, "click");
+        const url = URL.createObjectURL(file);
+        onChange?.(url, "click");
       } else {
         throw new Error("No file selected");
       }
@@ -37,7 +38,8 @@ export default function DropZone({
     e.stopPropagation();
     const file = e.dataTransfer.files[0];
     if (file) {
-      onChange?.(file, "drop");
+      const url = URL.createObjectURL(file);
+      onChange?.(url, "drop");
     } else {
       throw new Error("No file selected");
     }

@@ -40,16 +40,12 @@ const convertBmpToPng = (bmpData: any): FileInfo => {
   };
 };
 
-/**
- *
- * @param file ico file
- * @returns processed icons as SizedFiles
- */
 export async function icoToSizedFiles(
-  file: File
-): Promise<Partial<SizedFiles>> {
+  iconUrl: string
+): Promise<Partial<Record<Size, string>>> {
   try {
-    const arrayBuffer = await file.arrayBuffer();
+    const response = await fetch(iconUrl);
+    const arrayBuffer = await response.arrayBuffer();
     const uint8Array = new Uint8Array(arrayBuffer);
     const decodedIcons = decodeICO(uint8Array);
     console.log("decodedIcons", decodedIcons);
@@ -58,12 +54,13 @@ export async function icoToSizedFiles(
 
     console.log("processedIcons", processedIcons);
 
-    const files: Partial<SizedFiles> = {};
+    const files: Partial<Record<Size, string>> = {};
     for (const icon of processedIcons) {
-      const sizedFile = await urlToFile(icon.url, `icon-${icon.size}.png`);
-      if (sizedFile) {
-        files[icon.size] = sizedFile;
-      }
+      // const sizedFile = await urlToFile(icon.url, `icon-${icon.size}.png`);
+      // if (sizedFile) {
+      //   files[icon.size] = sizedFile;
+      // }
+      files[icon.size] = icon.url;
     }
 
     return files;
