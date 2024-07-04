@@ -60,6 +60,20 @@ function TooltipPortal({
   );
 }
 
+function throttle<T extends (...args: any[]) => void>(
+  func: T,
+  limit: number
+): T {
+  let inThrottle: boolean;
+  return function (this: any, ...args: any[]) {
+    if (!inThrottle) {
+      func.apply(this, args);
+      inThrottle = true;
+      setTimeout(() => (inThrottle = false), limit);
+    }
+  } as T;
+}
+
 export default function useTooltip<T extends HTMLElement>({
   content,
   delay = 500,
@@ -68,16 +82,24 @@ export default function useTooltip<T extends HTMLElement>({
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const triggerRef = useRef<T>(null);
   const timeoutRef = useRef<NodeJS.Timeout>();
+  const isHoveringRef = useRef(false);
 
   const lines = useMemo(() => content.split("\n"), [content]);
 
+  const throttledSetPosition = useMemo(
+    () =>
+      throttle((x: number, y: number) => {
+        setPosition({ x, y });
+      }, 16), // ~60fps
+    []
+  );
+
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      const offset = 15; // Distance from cursor
-      setPosition({
-        x: e.clientX + offset,
-        y: e.clientY + offset,
-      });
+      if (isHoveringRef.current) {
+        const offset = 15; // Distance from cursor
+        throttledSetPosition(e.clientX + offset, e.clientY + offset);
+      }
     };
 
     window.addEventListener("mousemove", handleMouseMove);
@@ -85,9 +107,10 @@ export default function useTooltip<T extends HTMLElement>({
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
     };
-  }, []);
+  }, [throttledSetPosition]);
 
   const handleMouseEnter = () => {
+    isHoveringRef.current = true;
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     timeoutRef.current = setTimeout(() => {
       setIsVisible(true);
@@ -95,6 +118,7 @@ export default function useTooltip<T extends HTMLElement>({
   };
 
   const handleMouseLeave = () => {
+    isHoveringRef.current = false;
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     setIsVisible(false);
   };
