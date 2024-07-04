@@ -9,7 +9,7 @@ export default function SizedDropZones({
   updateImageUrl: (size: Size, imageUrl: string) => void;
 }) {
   return (
-    <div className="flex flex-wrap gap-4 items-start mt-10">
+    <div className="gap-4 grid grid-cols-5 items-start">
       {Sizes.toReversed().map((size) => {
         let imageUrl = imageUrls[size];
         if (!imageUrl) return null;
@@ -17,7 +17,10 @@ export default function SizedDropZones({
         return (
           <ImagePreview
             key={size}
-            file={imageUrl}
+            className={
+              size === 256 ? "col-span-3" : size === 128 ? "col-span-2" : ""
+            }
+            imageUrl={imageUrl}
             size={size}
             updateImageUrl={updateImageUrl}
           />
