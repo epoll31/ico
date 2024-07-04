@@ -135,7 +135,7 @@ export default function Page() {
   }, [imageUrls, activeImageUrls]);
 
   return (
-    <div className="flex flex-col justify-center items-center p-20 gap-10">
+    <div className="flex flex-col justify-center items-center gap-10 p-10">
       <div className="flex  items-center justify-center gap-10">
         <div className="flex flex-col flex-1 h-full items-center justify-center">
           <h1 className="text-4xl font-bold text-center">

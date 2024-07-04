@@ -27,7 +27,7 @@ export default function ImagePreview({
   return (
     <div
       className={cn(
-        "relative h-full border shadow-xl rounded-2xl flex flex-col items-center justify-between px-4 pt-4 pb-4 hover:animate-wiggle",
+        "relative min-w-fit h-full border shadow-xl rounded-2xl flex flex-col items-center justify-between px-4 pt-4 pb-4 hover:animate-wiggle",
         className
       )}
     >
