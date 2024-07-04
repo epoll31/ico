@@ -13,8 +13,12 @@ export default function SizedDropZones({
   return (
     <div className="flex flex-wrap gap-4 items-start mt-10">
       {Sizes.toReversed().map((size) => {
-        const file = files[size];
+        let file = files[size];
         if (!file) return null;
+
+        if (typeof file === "string") {
+          // file = new File([file], `icon-${size}.png`, { type: "image/png" });
+        }
 
         return (
           <DropZone onChange={(file) => updateFile(size, file)} key={size}>

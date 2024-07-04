@@ -20,12 +20,11 @@ export default function AnimatedBorder({
 }) {
   const ref = useRef<SVGSVGElement>(null);
   const [key, setKey] = React.useState(0);
-
   useEffect(() => {
-    setKey(key === 0 ? 1 : 0);
+    setKey((key) => (key === 0 ? 1 : 0));
   }, [
-    ref.current?.getBoundingClientRect().width,
-    ref.current?.getBoundingClientRect().height,
+    ref.current?.getBoundingClientRect()?.width,
+    ref.current?.getBoundingClientRect()?.height,
   ]);
 
   return (

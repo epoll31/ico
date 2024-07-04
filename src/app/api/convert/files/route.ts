@@ -5,15 +5,20 @@ export async function POST(req: NextRequest) {
   const formData = await req.formData();
 
   const files = formData.getAll("files") as File[];
+  console.log("files:", files);
 
   const pngArrayBuffers = await Promise.all(
     files.map((file) => file.arrayBuffer())
   );
 
+  console.log("pngArrayBuffers:", pngArrayBuffers);
+
   const pngBuffers = pngArrayBuffers.map((buffer) => Buffer.from(buffer));
 
+  console.log("pngBuffers:", pngBuffers);
+
   try {
-    const icoBuffer = await toIco(pngBuffers, { resize: true });
+    const icoBuffer = await toIco(pngBuffers);
     // console.log("ICO buffer:", icoBuffer);
 
     // Create a Response with the ico buffer

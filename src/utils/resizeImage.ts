@@ -1,7 +1,7 @@
 import { Size } from "@/components/ImagePreview";
 import Resizer from "react-image-file-resizer";
 
-export default function resizeImage(file: File, size: Size) {
+export default async function resizeImage(file: File, size: Size) {
   return new Promise((resolve) =>
     Resizer.imageFileResizer(
       file,
@@ -10,10 +10,10 @@ export default function resizeImage(file: File, size: Size) {
       "PNG",
       100,
       0,
-      (uri) => {
-        resolve(uri);
+      (uri: string | Blob | File | ProgressEvent<FileReader>) => {
+        return resolve(uri);
       },
-      "file",
+      "blob", // uri will be returned as a Blob
       size,
       size
     )

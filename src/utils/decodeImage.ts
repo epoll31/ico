@@ -52,8 +52,11 @@ export async function icoToSizedFiles(
     const arrayBuffer = await file.arrayBuffer();
     const uint8Array = new Uint8Array(arrayBuffer);
     const decodedIcons = decodeICO(uint8Array);
+    console.log("decodedIcons", decodedIcons);
 
     const processedIcons = await Promise.all(decodedIcons.map(processIcon));
+
+    console.log("processedIcons", processedIcons);
 
     const files: Partial<SizedFiles> = {};
     for (const icon of processedIcons) {

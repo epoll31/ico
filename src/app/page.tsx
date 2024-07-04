@@ -22,6 +22,14 @@ function spreadFiles(file: File) {
   };
 }
 
+const downloadBlobAsFile = (blob: Blob, filename: string) => {
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  link.click();
+};
+
 async function resizeFiles(files: Partial<SizedFiles>) {
   const resizedFiles = files;
 
@@ -37,52 +45,67 @@ async function resizeFiles(files: Partial<SizedFiles>) {
 
 export default function Page() {
   const [file, setFile] = useState<File>();
-  const [files, setFilesDirect] = useState<Partial<SizedFiles>>();
+  const [files, setFilesDirect] = useState<Partial<SizedFiles>>({});
 
-  async function setFilesFromIco(file: File) {
-    const files = await icoToSizedFiles(file);
-    setFilesDirect(files); // TODO: maybe use setFiles?
-  }
+  const setFiles = useCallback(
+    async (files: Partial<SizedFiles>) => {
+      if (!files) {
+        setFilesDirect({});
+        return;
+      }
+
+      files = await resizeFiles(files); // TODO: maybe use setFiles which will resize the images?
+
+      console.log("settingfiles", files);
+
+      setFilesDirect(files);
+    },
+    [setFilesDirect]
+  );
+
+  const updateFile = useCallback(
+    async (size: Size, file: File) => {
+      const resizedFile = (await resizeImage(file, size)) as File;
+      setFilesDirect((files) => ({
+        ...files,
+        [size]: resizedFile,
+      }));
+    },
+    [setFilesDirect]
+  );
+
+  const setFilesFromIco = useCallback(
+    async (file: File) => {
+      const files = await icoToSizedFiles(file);
+      setFilesDirect(files); // TODO: maybe use setFiles which will resize the images?
+    },
+    [setFilesDirect]
+  );
 
   useEffect(() => {
     if (file) {
-      // console.log("filetype", file.type);
       if (file.type === "image/png") {
-        console.log("loading png");
+        console.log("setting files from png");
+        console.log(file instanceof File);
+        console.log(file.type);
         setFiles(spreadFiles(file));
       } else if (
         file.type === "image/x-icon" ||
         file.type === "image/vnd.microsoft.icon"
       ) {
-        console.log("loading ico");
         setFilesFromIco(file);
       } else {
         alert("Unsupported file type");
       }
     } else {
-      setFiles(undefined);
+      setFiles({});
     }
-  }, [file]);
+  }, [file, setFiles, setFilesFromIco]);
 
-  async function setFiles(files: Partial<SizedFiles> | undefined) {
-    if (!files) {
-      return;
-    }
-
-    files = await resizeFiles(files);
-
-    setFilesDirect(files);
-  }
-  const downloadBlobAsFile = (blob: Blob, filename: string) => {
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = filename;
-    link.click();
-  };
   const handleDownloadRequest = useCallback(
     async (files: Partial<SizedFiles>) => {
       const pngFiles = Object.values(files).filter(Boolean) as File[];
+      console.log("pngFiles", pngFiles);
 
       const formData = new FormData();
       pngFiles.forEach((file) => formData.append("files", file));
@@ -105,15 +128,19 @@ export default function Page() {
         console.error("Error:", error);
       }
     },
-    [files]
+    []
   );
+
+  useEffect(() => {
+    console.log("files", files);
+  }, [files]);
 
   return (
     <div className="flex flex-col justify-center items-center p-20 gap-10">
       <div className="flex  items-center justify-center gap-10">
         <div className="flex flex-col flex-1 h-full items-center justify-center">
           <h1 className="text-4xl font-bold text-center">
-            ICO's Better Than Ever
+            ICO&rsquo;s Better Than Ever
           </h1>
           <p className="text-2xl text-center">Lorem ipsum dolor sit amet.</p>
         </div>
@@ -131,15 +158,7 @@ export default function Page() {
       </div>
       {files && (
         <>
-          <SizedDropZones
-            files={files}
-            updateFile={(size, file) =>
-              setFiles({
-                ...files,
-                [size]: file,
-              })
-            }
-          />
+          <SizedDropZones files={files} updateFile={updateFile} />
           <button
             onClick={() => handleDownloadRequest(files)}
             className="bg-blue-500 text-white px-4 py-2 rounded-md"
