@@ -11,7 +11,11 @@ export default async function resizeImage(
   // Convert base64 to Buffer
   const imageBuffer = Buffer.from(base64Image, "base64");
 
-  const output = await sharp(imageBuffer).resize(size, size).toBuffer();
+  const output = await sharp(imageBuffer)
+    .resize(size, size, {
+      fit: "fill",
+    })
+    .toBuffer();
 
   // Return base64 string of the resized image
   return {
