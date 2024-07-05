@@ -6,10 +6,16 @@ const DropZone = forwardRef(
       className,
       onChange,
       children,
+      dataTooltipId,
+      dataTooltipDelayShow,
+      dataTooltipDelayHide,
     }: {
       className?: string;
       onChange?: (url: string, type: "drop" | "click") => void;
       children?: React.ReactNode;
+      dataTooltipId?: string;
+      dataTooltipDelayShow?: number;
+      dataTooltipDelayHide?: number;
     },
     ref: React.Ref<HTMLButtonElement>
   ) => {
@@ -60,6 +66,9 @@ const DropZone = forwardRef(
         onClick={handleClick}
         onDrop={handleDrop}
         onDragOver={handleDragOver}
+        data-tooltip-id={dataTooltipId}
+        data-tooltip-delay-show={dataTooltipDelayShow}
+        data-tooltip-delay-hide={dataTooltipDelayHide}
         ref={ref}
       >
         {children}
