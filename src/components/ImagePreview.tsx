@@ -20,9 +20,7 @@ export default function ImagePreview({
   updateImageUrl: (imageUrl: string) => void;
   updateActiveImageUrls: (active: boolean) => void;
 }) {
-  const { Tooltip, triggerRef } = useTooltip<HTMLButtonElement>({
-    content: "Drag and drop an image here,\n or click to select an image",
-  });
+  const { Tooltip, triggerRef } = useTooltip<HTMLElement>();
 
   return (
     <div
@@ -31,7 +29,7 @@ export default function ImagePreview({
         className
       )}
     >
-      <DropZone className="flex-1" onChange={updateImageUrl} ref={triggerRef}>
+      <DropZone className="flex-1" onChange={updateImageUrl}>
         {imageUrl ? (
           <Image
             src={imageUrl}
@@ -39,11 +37,14 @@ export default function ImagePreview({
             width={size}
             height={size}
             style={{ width: size, height: size }}
+            className="border"
+            ref={triggerRef as any}
           />
         ) : (
           <div
             style={{ width: size, height: size }}
-            className="flex items-center justify-center"
+            className="flex items-center justify-center border rounded"
+            ref={triggerRef as any}
           >
             <Upload className="w-8 h-8" />
           </div>
@@ -60,7 +61,9 @@ export default function ImagePreview({
           updateActiveImageUrls(e.target.checked);
         }}
       />
-      <Tooltip />
+      <Tooltip className="text-center">
+        Drag and drop an image here<br></br>or click to select an image
+      </Tooltip>
     </div>
   );
 }
