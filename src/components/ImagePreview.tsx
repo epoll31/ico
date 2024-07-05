@@ -51,15 +51,17 @@ export default function ImagePreview({
           </div>
         )}
       </DropZone>
-      <p className="text-lg mt-2">
-        {size}x{size}
-      </p>
+      <div className="flex flex-wrap gap-x-4 gap-y-2 justify-center mt-2 w-full">
+        <p className="text-lg">
+          {size}x{size}
+        </p>
 
-      <Toggle
-        toggled={active}
-        disabled={imageUrl === null}
-        setToggled={updateActiveImageUrls}
-      />
+        <Toggle
+          toggled={active}
+          disabled={imageUrl === null}
+          setToggled={updateActiveImageUrls}
+        />
+      </div>
       <Tooltip className="text-center">
         Drag and drop an image here<br></br>or click to select an image
       </Tooltip>
