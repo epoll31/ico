@@ -11,6 +11,7 @@ import downloadBlobAsFile from "@/utils/downloadBlobAsFile";
 import { resizeImageUrl, resizeImageUrls } from "@/utils/resizeImageUrls";
 import spreadSizes from "@/utils/spreadSizes";
 import cn from "@/utils/cn";
+import Footer from "@/components/Footer";
 
 export default function Page() {
   const [imageUrls, setImageUrlsDirect] = useState<Record<Size, string | null>>(
@@ -143,46 +144,48 @@ export default function Page() {
   );
 
   return (
-    <div className="flex flex-col justify-center items-center gap-10 p-10">
-      <div className="flex  items-center justify-center gap-10">
-        <div className="flex flex-col flex-1 h-full items-center justify-center">
-          <h1 className="text-4xl font-bold text-center">
-            ICO&rsquo;s Better Than Ever
-          </h1>
-          <p className="text-2xl text-center">Lorem ipsum dolor sit amet.</p>
+    <div className="flex flex-col items-center w-full h-screen">
+      <div className="flex-1 flex flex-col items-center justify-center gap-10 px-10">
+        <div className="flex  items-center justify-center gap-10">
+          <div className="flex flex-col flex-1 h-full items-center justify-center">
+            <h1 className="text-4xl font-bold text-center">
+              ICO&rsquo;s Better Than Ever
+            </h1>
+            <p className="text-2xl text-center">Lorem ipsum dolor sit amet.</p>
+          </div>
+          <div className="flex flex-col flex-1 h-full items-center justify-center gap-4">
+            <DropZone onChange={loadFile} className="relative">
+              <div className="flex flex-col justify-center items-center  p-5 gap-2 ">
+                <h1 className="text-4xl font-bold">Drop your image here</h1>
+                <p className="text-xl">Or click to select an image</p>
+                <Upload className="w-8 h-8 mx-4" />
+              </div>
+              {/* TODO: fix dashArray */}
+              <AnimatedBorder borderRadius={15} dashArray="10 10" />
+            </DropZone>
+          </div>
         </div>
-        <div className="flex flex-col flex-1 h-full items-center justify-center gap-4">
-          <DropZone onChange={loadFile} className="relative">
-            <div className="flex flex-col justify-center items-center  p-5 gap-2 ">
-              <h1 className="text-4xl font-bold">Drop your image here</h1>
-              <p className="text-xl">Or click to select an image</p>
-              <Upload className="w-8 h-8 mx-4" />
-            </div>
-            {/* TODO: fix dashArray */}
-            <AnimatedBorder borderRadius={15} dashArray="10 10" />
-          </DropZone>
-        </div>
+        <SizedDropZones
+          imageUrls={imageUrls}
+          activeImageUrls={activeImageUrls}
+          updateImageUrl={updateImageUrl}
+          updateActiveImageUrls={updateActiveImageUrl}
+        />
+
+        <button
+          onClick={handleDownloadRequest}
+          disabled={isDownloadDisabled}
+          className={cn(
+            " text-white px-4 py-2 rounded-md transition-all duration-200 shadow-lg",
+            isDownloadDisabled
+              ? "cursor-not-allowed bg-gray-300 text-gray-600"
+              : "cursor-pointer bg-blue-400 text-white"
+          )}
+        >
+          Download
+        </button>
       </div>
-
-      <SizedDropZones
-        imageUrls={imageUrls}
-        activeImageUrls={activeImageUrls}
-        updateImageUrl={updateImageUrl}
-        updateActiveImageUrls={updateActiveImageUrl}
-      />
-
-      <button
-        onClick={handleDownloadRequest}
-        disabled={isDownloadDisabled}
-        className={cn(
-          " text-white px-4 py-2 rounded-md transition-all duration-200 shadow-lg",
-          isDownloadDisabled
-            ? "cursor-not-allowed bg-gray-300 text-gray-600"
-            : "cursor-pointer bg-blue-400 text-white"
-        )}
-      >
-        Download
-      </button>
+      <Footer />
     </div>
   );
 }
