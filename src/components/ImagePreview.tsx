@@ -4,6 +4,7 @@ import DropZone from "./DropZone";
 import cn from "@/utils/cn";
 import useTooltip from "./ToolTip";
 import Upload from "./icons/upload";
+import Toggle from "./Toggle";
 
 export default function ImagePreview({
   className,
@@ -53,13 +54,11 @@ export default function ImagePreview({
       <p className="text-lg mt-2">
         {size}x{size}
       </p>
-      <input
-        type="checkbox"
-        checked={active}
-        disabled={!imageUrl}
-        onChange={(e) => {
-          updateActiveImageUrls(e.target.checked);
-        }}
+
+      <Toggle
+        toggled={active}
+        disabled={imageUrl === null}
+        setToggled={updateActiveImageUrls}
       />
       <Tooltip className="text-center">
         Drag and drop an image here<br></br>or click to select an image
