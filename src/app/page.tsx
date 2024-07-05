@@ -4,12 +4,13 @@ import AnimatedBorder from "@/components/AnimatedBorder";
 import DropZone from "@/components/DropZone";
 import SizedDropZones from "@/components/SizedDropZones";
 import Upload from "@/components/icons/upload";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { icoToImageUrls } from "@/utils/decodeImage";
 import { Size, Sizes } from "@/lib/types";
 import downloadBlobAsFile from "@/utils/downloadBlobAsFile";
 import { resizeImageUrl, resizeImageUrls } from "@/utils/resizeImageUrls";
 import spreadSizes from "@/utils/spreadSizes";
+import cn from "@/utils/cn";
 
 export default function Page() {
   const [imageUrls, setImageUrlsDirect] = useState<Record<Size, string | null>>(
@@ -134,6 +135,13 @@ export default function Page() {
     }
   }, [imageUrls, activeImageUrls]);
 
+  const isDownloadDisabled = useMemo(
+    () =>
+      Sizes.filter((size) => imageUrls[size] && activeImageUrls[size])
+        .length === 0,
+    [imageUrls, activeImageUrls]
+  );
+
   return (
     <div className="flex flex-col justify-center items-center gap-10 p-10">
       <div className="flex  items-center justify-center gap-10">
@@ -162,15 +170,19 @@ export default function Page() {
         updateImageUrl={updateImageUrl}
         updateActiveImageUrls={updateActiveImageUrl}
       />
-      {Sizes.filter((size) => imageUrls[size] && activeImageUrls[size]).length >
-        0 && (
-        <button
-          onClick={handleDownloadRequest}
-          className="bg-blue-500 text-white px-4 py-2 rounded-md"
-        >
-          Download
-        </button>
-      )}
+
+      <button
+        onClick={handleDownloadRequest}
+        disabled={isDownloadDisabled}
+        className={cn(
+          " text-white px-4 py-2 rounded-md transition-all duration-200 shadow-lg",
+          isDownloadDisabled
+            ? "cursor-not-allowed bg-gray-300 text-gray-600"
+            : "cursor-pointer bg-blue-400 text-white"
+        )}
+      >
+        Download
+      </button>
     </div>
   );
 }
