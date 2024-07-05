@@ -12,6 +12,7 @@ import { resizeImageUrl, resizeImageUrls } from "@/utils/resizeImageUrls";
 import spreadSizes from "@/utils/spreadSizes";
 import cn from "@/utils/cn";
 import Footer from "@/components/Footer";
+import Download from "@/components/icons/download";
 
 export default function Page() {
   const [imageUrls, setImageUrlsDirect] = useState<Record<Size, string | null>>(
@@ -176,12 +177,13 @@ export default function Page() {
           onClick={handleDownloadRequest}
           disabled={isDownloadDisabled}
           className={cn(
-            " text-white px-4 py-2 rounded-md transition-all duration-200 shadow-lg",
+            " text-white px-4 py-2 rounded-full transition-all duration-200 shadow-lg flex items-center gap-2 ",
             isDownloadDisabled
               ? "cursor-not-allowed bg-gray-300 text-gray-600"
-              : "cursor-pointer bg-blue-400 text-white"
+              : "cursor-pointer bg-blue-400 text-white hover:scale-105 active:scale-95"
           )}
         >
+          <Download className="w-4 h-4" />
           Download
         </button>
       </div>
