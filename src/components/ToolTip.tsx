@@ -72,6 +72,7 @@ function TooltipPortal({
 export default function useTooltip<T extends HTMLElement>(props?: {
   delay?: number;
 }) {
+  //TODO: tooltip gets stuck after inserting
   const { delay = 500 } = props || {};
   const [isVisible, setIsVisible] = useState(false);
   const [triggerRect, setTriggerRect] = useState<DOMRect | null>(null);
