@@ -8,6 +8,7 @@ import Toggle from "./Toggle";
 import { Tooltip } from "react-tooltip";
 import { ImageInfo } from "@/app/page";
 import RemoveBGToggle from "./RemoveBGToggle";
+import { removeBG } from "@/utils/removeBG";
 
 export default function ImagePreview({
   className,
@@ -45,6 +46,7 @@ export default function ImagePreview({
                 updateImageInfo({
                   ...imageInfo,
                   url: imageUrl,
+                  removeBGUrl: null,
                 });
               }
             }}
@@ -54,12 +56,12 @@ export default function ImagePreview({
           >
             {imageInfo ? (
               <Image
-                src={imageInfo.url}
+                src={imageInfo.removeBGUrl ?? imageInfo.url}
                 alt={`icon ${size}x${size}`}
                 width={size}
                 height={size}
                 style={{ width: size, height: size }}
-                className="border"
+                className="border bg-checkered"
               />
             ) : (
               <div
@@ -79,11 +81,12 @@ export default function ImagePreview({
             <RemoveBGToggle
               toggled={imageInfo?.removeBGUrl !== null}
               disabled={imageInfo === null}
-              setToggled={(active) => {
+              setToggled={async (active) => {
+                console.log("setToggled", active);
                 if (imageInfo) {
                   updateImageInfo({
                     ...imageInfo,
-                    removeBGUrl: active ? imageInfo.url : null,
+                    removeBGUrl: active ? await removeBG(imageInfo.url) : null,
                   });
                 }
               }}

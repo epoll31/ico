@@ -27,6 +27,20 @@ const config: Config = {
           },
         },
       },
+      backgroundImage: {
+        checkered: `
+          linear-gradient(45deg, #00000020 25%, transparent 25%),
+          linear-gradient(-45deg, #00000020 25%, transparent 25%),
+          linear-gradient(45deg, transparent 75%, #00000020 75%),
+          linear-gradient(-45deg, transparent 75%, #00000020 75%)
+        `,
+      },
+      backgroundSize: {
+        checkered: "20px 20px",
+      },
+      backgroundPosition: {
+        checkered: "0 0, 0 10px, 10px -10px, -10px 0",
+      },
     },
   },
   plugins: [],
