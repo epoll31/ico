@@ -26,7 +26,7 @@ export default function ImagePreview({
           className
         )}
       >
-        <p className="text-lg">
+        <p className="text-lg pb-2">
           {size}x{size}
         </p>
 
