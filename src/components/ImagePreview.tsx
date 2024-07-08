@@ -2,13 +2,10 @@ import { Size } from "@/lib/types";
 import Image from "next/image";
 import DropZone from "./DropZone";
 import cn from "@/utils/cn";
-// import useTooltip from "./ToolTip";
 import Upload from "./icons/upload";
 import Toggle from "./Toggle";
 import { Tooltip } from "react-tooltip";
 import { ImageInfo } from "@/app/page";
-import RemoveBGToggle from "./RemoveBGToggle";
-import { removeBG } from "@/utils/removeBG";
 
 export default function ImagePreview({
   className,
@@ -40,13 +37,11 @@ export default function ImagePreview({
                 updateImageInfo({
                   url: imageUrl,
                   active: true,
-                  removeBGUrl: null,
                 });
               } else {
                 updateImageInfo({
                   ...imageInfo,
                   url: imageUrl,
-                  removeBGUrl: null,
                 });
               }
             }}
@@ -56,7 +51,7 @@ export default function ImagePreview({
           >
             {imageInfo ? (
               <Image
-                src={imageInfo.removeBGUrl ?? imageInfo.url}
+                src={imageInfo.url}
                 alt={`icon ${size}x${size}`}
                 width={size}
                 height={size}
@@ -78,19 +73,6 @@ export default function ImagePreview({
         </div>
         <div className="flex flex-col items-center justify-center gap-2 mt-2">
           <div className="flex flex-wrap gap-x-4 gap-y-2 justify-center mt-2 w-full">
-            <RemoveBGToggle
-              toggled={imageInfo?.removeBGUrl !== null}
-              disabled={imageInfo === null}
-              setToggled={async (active) => {
-                console.log("setToggled", active);
-                if (imageInfo) {
-                  updateImageInfo({
-                    ...imageInfo,
-                    removeBGUrl: active ? await removeBG(imageInfo.url) : null,
-                  });
-                }
-              }}
-            />
             <Toggle
               toggled={imageInfo?.active}
               disabled={imageInfo === null}

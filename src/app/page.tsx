@@ -3,7 +3,7 @@
 import DropZone from "@/components/DropZone";
 import SizedDropZones from "@/components/SizedDropZones";
 import Upload from "@/components/icons/upload";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { icoToImageUrls } from "@/utils/decodeImage";
 import { Size, Sizes } from "@/lib/types";
 import downloadBlobAsFile from "@/utils/downloadBlobAsFile";
@@ -12,13 +12,10 @@ import spreadSizes from "@/utils/spreadSizes";
 import cn from "@/utils/cn";
 import Footer from "@/components/Footer";
 import Download from "@/components/icons/download";
-import RemoveBGToggle from "@/components/RemoveBGToggle";
-import { removeBG } from "@/utils/removeBG";
 
 export interface ImageInfo {
   url: string;
   active: boolean;
-  removeBGUrl: string | null;
 }
 
 export type ImageInfoMap = Record<Size, ImageInfo | null>;
@@ -85,12 +82,7 @@ async function downloadImageInfoMap(imageInfos: ImageInfoMap) {
     Object.values(imageInfos).reduce<Promise<Blob>[]>(
       (blobs, imageInfo) =>
         imageInfo && imageInfo.active
-          ? [
-              ...blobs,
-              fetch(imageInfo.removeBGUrl ?? imageInfo.url).then((res) =>
-                res.blob()
-              ),
-            ]
+          ? [...blobs, fetch(imageInfo.url).then((res) => res.blob())]
           : blobs,
       []
     )
@@ -163,72 +155,6 @@ export default function Page() {
     [imageInfos]
   );
 
-  const allRemovedBGs = useMemo(() => {
-    return !Object.values(imageInfos).some(
-      (imageInfo) => imageInfo !== null && imageInfo.removeBGUrl === null
-    );
-  }, [imageInfos]);
-
-  const setAllRemovedBGs = useCallback(
-    async (active: boolean) => {
-      console.log("setAllRemovedBGs", active);
-      // await all removed bgs
-
-      //imageURls as record:
-      // const imageUrls = Sizes.reduce<Record<Size, string | null>>(
-      //   (iamgeInfos, size) => {
-      //     const imageInfo = imageInfos[size];
-      //     if (imageInfo) {
-      //       return {
-      //         ...iamgeInfos,
-      //         [size]: imageInfo.url,
-      //       };
-      //     } else {
-      //       return iamgeInfos;
-      //     }
-      //   },
-      //   spreadSizes<string | null>(null)
-      // );
-
-      //imageURLs as array,
-
-      const imageUrls = Object.values(imageInfos).reduce<string[]>(
-        (imageUrls, imageInfo) =>
-          imageInfo && imageInfo.removeBGUrl === null
-            ? [...imageUrls, imageInfo.url]
-            : imageUrls,
-        []
-      );
-
-      console.log("imageUrls", imageUrls);
-
-      const removedBGUrls = await Promise.all(
-        imageUrls.map((imageUrl) => removeBG(imageUrl))
-      );
-
-      console.log("removedBGUrls", removedBGUrls);
-
-      // set all removed bgs
-      setImageInfos(
-        Sizes.reduce<ImageInfoMap>((updatedImageInfos, size) => {
-          const imageInfo = imageInfos[size];
-          if (imageInfo) {
-            updatedImageInfos[size] = {
-              ...imageInfo,
-              removeBGUrl: active ? removedBGUrls[Sizes.indexOf(size)] : null,
-            };
-          }
-          return updatedImageInfos;
-        }, spreadSizes<ImageInfo | null>(null))
-      );
-    },
-    [setImageInfos, imageInfos]
-  );
-
-  useEffect(() => {
-    console.log("imageInfos", imageInfos);
-  }, [imageInfos]);
-
   return (
     <div className="flex flex-col items-center w-full h-screen">
       <div className="flex-1 flex flex-col items-center justify-center gap-10 px-10">
@@ -265,11 +191,6 @@ export default function Page() {
         />
 
         <div className="flex items-center justify-center gap-5">
-          <RemoveBGToggle
-            toggled={allRemovedBGs}
-            disabled={isDownloadDisabled}
-            setToggled={setAllRemovedBGs}
-          />
           <button
             onClick={handleDownloadRequest}
             disabled={isDownloadDisabled}
