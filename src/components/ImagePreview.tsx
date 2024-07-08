@@ -46,8 +46,8 @@ export default function ImagePreview({
               }
             }}
             dataTooltipId="tooltip"
-            dataTooltipDelayHide={500}
-            dataTooltipDelayShow={500}
+            dataTooltipDelayHide={100}
+            dataTooltipDelayShow={300}
           >
             {imageInfo ? (
               <Image
