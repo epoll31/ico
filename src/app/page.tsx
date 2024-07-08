@@ -12,8 +12,6 @@ import spreadSizes from "@/utils/spreadSizes";
 import cn from "@/utils/cn";
 import Footer from "@/components/Footer";
 import Download from "@/components/icons/download";
-import Person from "@/components/icons/person";
-import PersonFilled from "@/components/icons/personFilled";
 
 export interface ImageInfo {
   url: string;
@@ -194,16 +192,6 @@ export default function Page() {
         />
 
         <div className="flex items-center justify-center gap-5">
-          <button
-            className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-full transition-all duration-200 shadow-lg"
-            disabled={isDownloadDisabled}
-          >
-            <p className="text-sm">Remove Background</p>
-            <PersonFilled className="w-4 h-4" />
-            {"->"}
-            <Person className="w-4 h-4" />
-          </button>
-
           <button
             onClick={handleDownloadRequest}
             disabled={isDownloadDisabled}
