@@ -3,17 +3,14 @@
 import cn from "@/utils/cn";
 import ImagePreview from "./ImagePreview";
 import { Size, Sizes } from "@/lib/types";
+import { ImageInfo, ImageInfoMap } from "@/app/page";
 
 export default function SizedDropZones({
-  imageUrls,
-  activeImageUrls,
-  updateImageUrl,
-  updateActiveImageUrls,
+  imageInfos,
+  updateImageInfo,
 }: {
-  imageUrls: Record<Size, string | null>;
-  activeImageUrls: Record<Size, boolean>;
-  updateImageUrl: (size: Size, imageUrl: string) => void;
-  updateActiveImageUrls: (size: Size, active: boolean) => void;
+  imageInfos: ImageInfoMap;
+  updateImageInfo: (size: Size, imageInfo: ImageInfo | null) => void;
 }) {
   const sizes: Record<Size, string> = {
     [256]: "col-span-2 min-[750px]:col-span-3",
@@ -28,16 +25,16 @@ export default function SizedDropZones({
   return (
     <div className="gap-4 grid grid-cols-2  min-[750px]:grid-cols-5">
       {Sizes.toReversed().map((size) => {
+        const imageInfo = imageInfos[size];
+
         return (
           <ImagePreview
             key={size}
             className={cn(sizes[size], "")}
-            imageUrl={imageUrls[size]}
             size={size}
-            active={activeImageUrls[size]}
-            updateImageUrl={(imageUrl) => updateImageUrl(size, imageUrl)}
-            updateActiveImageUrls={(active) =>
-              updateActiveImageUrls(size, active)
+            imageInfo={imageInfo}
+            updateImageInfo={(imageInfo: ImageInfo) =>
+              updateImageInfo(size, imageInfo)
             }
           />
         );

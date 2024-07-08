@@ -1,6 +1,5 @@
 "use client";
 
-import AnimatedBorder from "@/components/AnimatedBorder";
 import DropZone from "@/components/DropZone";
 import SizedDropZones from "@/components/SizedDropZones";
 import Upload from "@/components/icons/upload";
@@ -13,135 +12,150 @@ import spreadSizes from "@/utils/spreadSizes";
 import cn from "@/utils/cn";
 import Footer from "@/components/Footer";
 import Download from "@/components/icons/download";
+import Person from "@/components/icons/person";
+import PersonFilled from "@/components/icons/personFilled";
+
+export interface ImageInfo {
+  url: string;
+  active: boolean;
+  removeBGUrl: string | null;
+}
+
+export type ImageInfoMap = Record<Size, ImageInfo | null>;
+
+async function pngBlobToImageInfoMap(imageUrl: string): Promise<ImageInfoMap> {
+  const spreadImageUrls = spreadSizes(imageUrl);
+
+  const resizedImageUrls = await resizeImageUrls(spreadImageUrls);
+
+  return Sizes.reduce<ImageInfoMap>(
+    (imageInfos, size) => ({
+      ...imageInfos,
+      [size]: {
+        url: resizedImageUrls[size],
+        active: true,
+        removeBGUrl: null,
+      },
+    }),
+    spreadSizes<ImageInfo | null>(null)
+  );
+}
+
+async function icoBlobToImageInfoMap(imageUrl: string): Promise<ImageInfoMap> {
+  const imageUrlsFromIco = await icoToImageUrls(imageUrl);
+
+  const imageUrlsFromIcoOrNull = {
+    ...spreadSizes(null),
+    ...imageUrlsFromIco,
+  };
+
+  return Sizes.reduce<ImageInfoMap>((imageInfos, size) => {
+    const imageUrl = imageUrlsFromIcoOrNull[size];
+    if (imageUrl) {
+      return {
+        ...imageInfos,
+        [size]: {
+          url: imageUrl,
+          active: true,
+          removeBGUrl: null,
+        },
+      };
+    } else {
+      return imageInfos;
+    }
+  }, spreadSizes<ImageInfo | null>(null));
+}
+
+async function imageUrlToImageInfoMap(imageUrl: string): Promise<ImageInfoMap> {
+  const blob = await fetch(imageUrl).then((res) => res.blob());
+  if (blob.type === "image/png") {
+    return pngBlobToImageInfoMap(imageUrl);
+  } else if (
+    blob.type === "image/x-icon" ||
+    blob.type === "image/vnd.microsoft.icon"
+  ) {
+    return icoBlobToImageInfoMap(imageUrl);
+  } else {
+    throw new Error("Unsupported file type");
+  }
+}
+
+async function downloadImageInfoMap(imageInfos: ImageInfoMap) {
+  const blobs = await Promise.all(
+    Object.values(imageInfos).reduce<Promise<Blob>[]>(
+      (blobs, imageInfo) =>
+        imageInfo && imageInfo.active
+          ? [...blobs, fetch(imageInfo.url).then((res) => res.blob())]
+          : blobs,
+      []
+    )
+  );
+
+  const formData = new FormData();
+  blobs.forEach((blob) => formData.append("blobs", blob));
+
+  try {
+    const response = await fetch("/api/convert/files", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error("HTTP error: status code " + response.status);
+    }
+
+    const blob = await response.blob();
+
+    downloadBlobAsFile(blob, "icon.ico");
+  } catch (error) {
+    console.error("Error:", error);
+  }
+}
 
 export default function Page() {
-  const [imageUrls, setImageUrlsDirect] = useState<Record<Size, string | null>>(
-    spreadSizes(null)
-  );
-  const [activeImageUrls, setActiveImageUrls] = useState<Record<Size, boolean>>(
-    spreadSizes(false)
+  const [imageInfos, setImageInfos] = useState<ImageInfoMap>(
+    spreadSizes<ImageInfo | null>(null)
   );
 
-  const setImageUrls = useCallback(
-    async (imageUrls: Record<Size, string | null>) => {
-      if (imageUrls) {
-        const resizedImageUrls = await resizeImageUrls(imageUrls);
-        setImageUrlsDirect(resizedImageUrls);
-        const activeImageUrls: Record<Size, boolean> = spreadSizes(false);
-        Object.keys(resizedImageUrls).forEach((size) => {
-          activeImageUrls[Number(size) as Size] = true;
-        });
-        setActiveImageUrls(activeImageUrls);
+  const loadImageUrlToAllSizes = useCallback(
+    async (imageUrl: string) => {
+      const imageInfos = await imageUrlToImageInfoMap(imageUrl);
+      setImageInfos(imageInfos);
+    },
+    [setImageInfos]
+  );
+
+  const updateImageInfo = useCallback(
+    async (size: Size, imageInfo: ImageInfo | null) => {
+      if (imageInfo) {
+        const resizedImageUrl = await resizeImageUrl(imageInfo.url, size);
+        setImageInfos((imageInfos) => ({
+          ...imageInfos,
+          [size]: {
+            ...imageInfo,
+            url: resizedImageUrl,
+          },
+        }));
       } else {
-        setImageUrlsDirect(spreadSizes(null));
-        setActiveImageUrls(spreadSizes(false));
+        setImageInfos((imageInfos) => ({
+          ...imageInfos,
+          [size]: null,
+        }));
       }
     },
-    [setImageUrlsDirect]
-  );
-
-  const updateImageUrl = useCallback(
-    async (size: Size, imageUrl: string) => {
-      const resizedImageUrl = await resizeImageUrl(imageUrl, size);
-      // TODO: make sure that ICO's import the correct size
-
-      setImageUrlsDirect((imageUrls) => ({
-        ...imageUrls,
-        [size]: resizedImageUrl,
-      }));
-      setActiveImageUrls((activeImageUrls) => ({
-        ...activeImageUrls,
-        [size]: true,
-      }));
-    },
-    [setImageUrlsDirect]
-  );
-
-  const updateActiveImageUrl = useCallback(
-    (size: Size, active: boolean) => {
-      setActiveImageUrls((activeImageUrls) => ({
-        ...activeImageUrls,
-        [size]: active,
-      }));
-    },
-    [setActiveImageUrls]
-  );
-
-  const setImageUrlsFromIco = useCallback(
-    async (imageUrl: string) => {
-      const iamgeUrlsFromIco = await icoToImageUrls(imageUrl);
-
-      const imageUrls = {
-        ...spreadSizes(null),
-        ...iamgeUrlsFromIco,
-      };
-      setImageUrlsDirect(imageUrls);
-
-      const activeImageUrls = spreadSizes(false);
-      Sizes.forEach((size) => {
-        activeImageUrls[size] = imageUrls[size] !== null;
-      });
-
-      setActiveImageUrls(activeImageUrls);
-    },
-    [setImageUrlsDirect]
-  );
-
-  const loadFile = useCallback(
-    async (imageUrl: string) => {
-      if (imageUrl) {
-        const blob = await fetch(imageUrl).then((res) => res.blob());
-        if (blob.type === "image/png") {
-          setImageUrls(spreadSizes(imageUrl));
-        } else if (
-          blob.type === "image/x-icon" ||
-          blob.type === "image/vnd.microsoft.icon"
-        ) {
-          setImageUrlsFromIco(imageUrl);
-        } else {
-          alert("Unsupported file type");
-        }
-      } else {
-        setImageUrls(spreadSizes(null));
-        setActiveImageUrls(spreadSizes(false));
-      }
-    },
-    [setImageUrls, setImageUrlsFromIco]
+    [setImageInfos]
   );
 
   const handleDownloadRequest = useCallback(async () => {
-    const blobs = await Promise.all(
-      Sizes.filter((size) => imageUrls[size] && activeImageUrls[size]).map(
-        (size) => fetch(imageUrls[size] as string).then((res) => res.blob())
-      )
-    );
-
-    const formData = new FormData();
-    blobs.forEach((blob) => formData.append("blobs", blob));
-
-    try {
-      const response = await fetch("/api/convert/files", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error("HTTP error: status code " + response.status);
-      }
-
-      const blob = await response.blob();
-
-      downloadBlobAsFile(blob, "icon.ico");
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  }, [imageUrls, activeImageUrls]);
+    downloadImageInfoMap(imageInfos);
+  }, [imageInfos]);
 
   const isDownloadDisabled = useMemo(
     () =>
-      Sizes.filter((size) => imageUrls[size] && activeImageUrls[size])
-        .length === 0,
-    [imageUrls, activeImageUrls]
+      !Object.values(imageInfos).some(
+        (imageInfo) => imageInfo !== null && imageInfo.active
+      ),
+    [imageInfos]
   );
 
   return (
@@ -155,37 +169,55 @@ export default function Page() {
             <p className="text-2xl text-center">Lorem ipsum dolor sit amet.</p>
           </div>
           <div className="flex flex-col flex-1 h-full items-center justify-center gap-4">
-            <DropZone onChange={loadFile} className="relative">
-              <div className="flex flex-col justify-center items-center  p-5 gap-2 ">
-                <h1 className="text-4xl font-bold">Drop your image here</h1>
-                <p className="text-xl">Or click to select an image</p>
-                <Upload className="w-8 h-8 mx-4" />
-              </div>
-              {/* TODO: fix dashArray */}
-              <AnimatedBorder borderRadius={15} dashArray="10 10" />
+            <DropZone
+              onChange={loadImageUrlToAllSizes}
+              className="flex flex-col items-center justify-center shadow-xl rounded-2xl px-14 pt-14 pb-7 gap-5 bg-white"
+              allow="drop"
+              as="div"
+            >
+              <DropZone
+                onChange={loadImageUrlToAllSizes}
+                className="cursor-pointer bg-blue-500 text-white hover:scale-105 active:scale-95 rounded-full transition-all duration-200 shadow-lg flex items-center gap-2 px-4 py-2"
+                allow="click"
+              >
+                <Upload className="w-4 h-4" />
+                <p className="whitespace-nowrap">Upload Image</p>
+              </DropZone>
+
+              <p className="text-gray-500">or drop an image here</p>
             </DropZone>
           </div>
         </div>
         <SizedDropZones
-          imageUrls={imageUrls}
-          activeImageUrls={activeImageUrls}
-          updateImageUrl={updateImageUrl}
-          updateActiveImageUrls={updateActiveImageUrl}
+          imageInfos={imageInfos}
+          updateImageInfo={updateImageInfo}
         />
 
-        <button
-          onClick={handleDownloadRequest}
-          disabled={isDownloadDisabled}
-          className={cn(
-            " text-white px-4 py-2 rounded-full transition-all duration-200 shadow-lg flex items-center gap-2 ",
-            isDownloadDisabled
-              ? "cursor-not-allowed bg-gray-300 text-gray-600"
-              : "cursor-pointer bg-blue-400 text-white hover:scale-105 active:scale-95"
-          )}
-        >
-          <Download className="w-4 h-4" />
-          Download
-        </button>
+        <div className="flex items-center justify-center gap-5">
+          <button
+            className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-full transition-all duration-200 shadow-lg"
+            disabled={isDownloadDisabled}
+          >
+            <p className="text-sm">Remove Background</p>
+            <PersonFilled className="w-4 h-4" />
+            {"->"}
+            <Person className="w-4 h-4" />
+          </button>
+
+          <button
+            onClick={handleDownloadRequest}
+            disabled={isDownloadDisabled}
+            className={cn(
+              " text-white px-4 py-2 rounded-full transition-all duration-200 shadow-lg flex items-center gap-2 ",
+              isDownloadDisabled
+                ? "cursor-not-allowed bg-gray-300 text-gray-600"
+                : "cursor-pointer bg-blue-500 text-white hover:scale-105 active:scale-95"
+            )}
+          >
+            <Download className="w-4 h-4" />
+            Download
+          </button>
+        </div>
       </div>
       <Footer />
     </div>

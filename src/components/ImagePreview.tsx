@@ -6,40 +6,50 @@ import cn from "@/utils/cn";
 import Upload from "./icons/upload";
 import Toggle from "./Toggle";
 import { Tooltip } from "react-tooltip";
+import { ImageInfo } from "@/app/page";
 
 export default function ImagePreview({
   className,
   size,
-  imageUrl,
-  active,
-  updateImageUrl,
-  updateActiveImageUrls,
+  imageInfo,
+  updateImageInfo,
 }: {
   className?: string;
   size: Size;
-  imageUrl: string | null;
-  active: boolean;
-  updateImageUrl: (imageUrl: string) => void;
-  updateActiveImageUrls: (active: boolean) => void;
+  imageInfo: ImageInfo | null;
+  updateImageInfo: (imageInfo: ImageInfo) => void;
 }) {
   return (
     <>
       <div
         className={cn(
-          "relative min-w-fit h-full border shadow-xl rounded-2xl flex flex-col items-center justify-between px-4 pt-4 pb-4 hover:animate-wiggle",
+          "relative min-w-fit h-full bg-white shadow-xl rounded-2xl flex flex-col items-center justify-between px-4 pt-4 pb-4 hover:animate-wiggle",
           className
         )}
       >
         <div className="flex-1 flex flex-col items-center justify-center gap-2">
           <DropZone
-            onChange={updateImageUrl}
+            onChange={(imageUrl) => {
+              if (!imageInfo) {
+                updateImageInfo({
+                  url: imageUrl,
+                  active: true,
+                  removeBGUrl: null,
+                });
+              } else {
+                updateImageInfo({
+                  ...imageInfo,
+                  url: imageUrl,
+                });
+              }
+            }}
             dataTooltipId="tooltip"
             dataTooltipDelayHide={500}
             dataTooltipDelayShow={500}
           >
-            {imageUrl ? (
+            {imageInfo ? (
               <Image
-                src={imageUrl}
+                src={imageInfo.url}
                 alt={`icon ${size}x${size}`}
                 width={size}
                 height={size}
@@ -65,9 +75,16 @@ export default function ImagePreview({
           </p>
 
           <Toggle
-            toggled={active}
-            disabled={imageUrl === null}
-            setToggled={updateActiveImageUrls}
+            toggled={imageInfo?.active}
+            disabled={imageInfo === null}
+            setToggled={(active) => {
+              if (imageInfo) {
+                updateImageInfo({
+                  ...imageInfo,
+                  active: active,
+                });
+              }
+            }}
           />
         </div>
       </div>

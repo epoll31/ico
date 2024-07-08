@@ -6,16 +6,20 @@ const DropZone = forwardRef(
       className,
       onChange,
       children,
+      allow = "any",
       dataTooltipId,
       dataTooltipDelayShow,
       dataTooltipDelayHide,
+      as: Component = "button",
     }: {
       className?: string;
       onChange?: (url: string, type: "drop" | "click") => void;
       children?: React.ReactNode;
+      allow?: "any" | "drop" | "click" | "none";
       dataTooltipId?: string;
       dataTooltipDelayShow?: number;
       dataTooltipDelayHide?: number;
+      as?: React.ElementType;
     },
     ref: React.Ref<HTMLButtonElement>
   ) => {
@@ -40,18 +44,22 @@ const DropZone = forwardRef(
     };
 
     const handleClick = async () => {
-      requestFile();
+      if (allow === "click" || allow === "any") {
+        requestFile();
+      }
     };
 
     const handleDrop = (e: React.DragEvent<HTMLButtonElement>) => {
-      e.preventDefault();
-      e.stopPropagation();
-      const file = e.dataTransfer.files[0];
-      if (file) {
-        const url = URL.createObjectURL(file);
-        onChange?.(url, "drop");
-      } else {
-        throw new Error("No file selected");
+      if (allow === "drop" || allow === "any") {
+        e.preventDefault();
+        e.stopPropagation();
+        const file = e.dataTransfer.files[0];
+        if (file) {
+          const url = URL.createObjectURL(file);
+          onChange?.(url, "drop");
+        } else {
+          throw new Error("No file selected");
+        }
       }
     };
 
@@ -61,7 +69,7 @@ const DropZone = forwardRef(
     };
 
     return (
-      <button
+      <Component
         className={className}
         onClick={handleClick}
         onDrop={handleDrop}
@@ -72,7 +80,7 @@ const DropZone = forwardRef(
         ref={ref}
       >
         {children}
-      </button>
+      </Component>
     );
   }
 );

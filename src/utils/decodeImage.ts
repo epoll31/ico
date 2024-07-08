@@ -48,7 +48,7 @@ export async function icoToImageUrls(
 
     const processedIcons = await Promise.all(decodedIcons.map(processIcon));
 
-    const files: Record<Size, string | null> = spreadSizes(null);
+    const files = spreadSizes<string | null>(null);
     for (const icon of processedIcons) {
       files[icon.size] = icon.url;
     }

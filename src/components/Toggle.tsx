@@ -6,7 +6,7 @@ import Check from "./icons/check";
 import X from "./icons/x";
 
 export default function Toggle({
-  toggled = true,
+  toggled = false,
   disabled = false,
   setToggled,
 }: {
@@ -26,7 +26,7 @@ export default function Toggle({
     <button
       className={cn(
         `relative h-7 w-12 cursor-pointer rounded-full duration-200`,
-        toggled ? "bg-blue-400" : "bg-[#24252d50]",
+        toggled ? "bg-blue-500" : "bg-[#24252d50]",
         disabled ? "cursor-not-allowed bg-gray-200" : "cursor-pointer"
       )}
       onClick={handleToggle}

@@ -1,7 +1,7 @@
 import { Size } from "@/lib/types";
 import resizeImageBase64 from "@/utils/resizeImageBase64";
 
-export async function resizeImageUrls(imageUrls: Record<Size, string | null>) {
+export async function resizeImageUrls(imageUrls: Record<Size, string>) {
   const resizedImages = imageUrls;
 
   for (const [rawSize, imageUrl] of Object.entries(imageUrls)) {
