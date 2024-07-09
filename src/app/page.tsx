@@ -23,7 +23,9 @@ export interface ImageInfo {
 
 export type ImageInfoMap = Record<Size, ImageInfo | null>;
 
-async function pngBlobToImageInfoMap(imageUrl: string): Promise<ImageInfoMap> {
+async function spreadImageUrlToImageInfoMap(
+  imageUrl: string
+): Promise<ImageInfoMap> {
   const spreadImageUrls = spreadSizes(imageUrl);
 
   const resizedImageUrls = await resizeImageUrls(spreadImageUrls);
@@ -41,7 +43,9 @@ async function pngBlobToImageInfoMap(imageUrl: string): Promise<ImageInfoMap> {
   );
 }
 
-async function icoBlobToImageInfoMap(imageUrl: string): Promise<ImageInfoMap> {
+async function spreatICOImageUrlToImageInfoMap(
+  imageUrl: string
+): Promise<ImageInfoMap> {
   const imageUrlsFromIco = await icoToImageUrls(imageUrl);
 
   const imageUrlsFromIcoOrNull = {
@@ -67,14 +71,27 @@ async function icoBlobToImageInfoMap(imageUrl: string): Promise<ImageInfoMap> {
 }
 
 async function imageUrlToImageInfoMap(imageUrl: string): Promise<ImageInfoMap> {
+  //TODO: add support for TIFF // technically works with image-js but something is wrong with the result
+  //TODO: add support for WEBP
+  //TODO: add support for SVG
+  //TODO: add support for AVIF
+  //TODO: add support for HEIC
+  //TODO: add support for HEIF
+  //TODO: add support for BMP
+
   const blob = await fetch(imageUrl).then((res) => res.blob());
-  if (blob.type === "image/png") {
-    return pngBlobToImageInfoMap(imageUrl);
+
+  if (
+    blob.type === "image/png" ||
+    blob.type === "image/jpeg" ||
+    blob.type === "image/jpg"
+  ) {
+    return spreadImageUrlToImageInfoMap(imageUrl);
   } else if (
     blob.type === "image/x-icon" ||
     blob.type === "image/vnd.microsoft.icon"
   ) {
-    return icoBlobToImageInfoMap(imageUrl);
+    return spreatICOImageUrlToImageInfoMap(imageUrl);
   } else {
     throw new Error("Unsupported file type");
   }
