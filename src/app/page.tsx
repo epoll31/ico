@@ -16,6 +16,7 @@ import MagneticButton from "@/components/MagneticButton";
 import Check from "@/components/icons/check";
 import X from "@/components/icons/x";
 import { webpToPng } from "@/utils/webpToPng";
+import { svgToPng } from "@/utils/svgToPng";
 
 export interface ImageInfo {
   url: string;
@@ -78,9 +79,15 @@ async function spreadWEBPImageUrlToImageInfoMap(
   return spreadImageUrlToImageInfoMap(pngImageUrl);
 }
 
+async function spreadSVGImageUrlToImageInfoMap(
+  imageUrl: string
+): Promise<ImageInfoMap> {
+  const pngImageUrl = await svgToPng(imageUrl);
+  return spreadImageUrlToImageInfoMap(pngImageUrl);
+}
+
 async function imageUrlToImageInfoMap(imageUrl: string): Promise<ImageInfoMap> {
   //TODO: add support for TIFF // technically works with image-js but something is wrong with the result
-  //TODO: add support for SVG
   //TODO: add support for AVIF
   //TODO: add support for HEIC
   //TODO: add support for HEIF
@@ -101,6 +108,8 @@ async function imageUrlToImageInfoMap(imageUrl: string): Promise<ImageInfoMap> {
     return spreatICOImageUrlToImageInfoMap(imageUrl);
   } else if (blob.type === "image/webp") {
     return spreadWEBPImageUrlToImageInfoMap(imageUrl);
+  } else if (blob.type === "image/svg+xml") {
+    return spreadSVGImageUrlToImageInfoMap(imageUrl);
   } else {
     throw new Error("Unsupported file type");
   }
