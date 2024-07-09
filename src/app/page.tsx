@@ -293,7 +293,7 @@ export default function Page() {
     <>
       <DropZone
         as="div"
-        className="flex flex-col items-center w-full h-screen"
+        className="flex flex-col items-center w-full h-screen pt-10"
         allow="drop"
         accept={InputFileTypes}
         onChange={loadImageUrlToAllSizes}
