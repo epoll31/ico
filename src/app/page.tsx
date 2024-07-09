@@ -120,6 +120,46 @@ async function imageUrlToImageInfoMap(imageUrl: string): Promise<ImageInfoMap> {
   }
 }
 
+async function fixImageUrl(imageUrl: string, size: Size): Promise<string> {
+  // convert to png/jpeg/jpg from webp/svg/ico
+  const blob = await fetch(imageUrl).then((res) => res.blob());
+
+  if (
+    blob.type === "image/png" ||
+    blob.type === "image/jpeg" ||
+    blob.type === "image/jpg"
+  ) {
+    return imageUrl;
+  } else if (
+    blob.type === "image/x-icon" ||
+    blob.type === "image/vnd.microsoft.icon"
+  ) {
+    const imageUrlsFromIco = await icoToImageUrls(imageUrl);
+
+    const fixedImageUrl = imageUrlsFromIco[size];
+
+    if (fixedImageUrl) {
+      return fixedImageUrl;
+    } else {
+      const size = Sizes.toReversed().find((size) =>
+        imageUrlsFromIco[size] === null ? false : true
+      );
+
+      if (size && imageUrlsFromIco[size]) {
+        return imageUrlsFromIco[size];
+      } else {
+        throw new Error("Could not find a valid image url in ICO");
+      }
+    }
+  } else if (blob.type === "image/webp") {
+    return await webpToPng(imageUrl);
+  } else if (blob.type === "image/svg+xml") {
+    return await svgToPng(imageUrl, size);
+  } else {
+    throw new Error("Unsupported file type");
+  }
+}
+
 async function downloadImageInfoMap(imageInfos: ImageInfoMap) {
   const blobs = await Promise.all(
     Object.values(imageInfos).reduce<Promise<Blob>[]>(
@@ -180,7 +220,8 @@ export default function Page() {
   const updateImageInfo = useCallback(
     async (size: Size, imageInfo: ImageInfo | null) => {
       if (imageInfo) {
-        const resizedImageUrl = await resizeImageUrl(imageInfo.url, size);
+        const fixedImageUrl = await fixImageUrl(imageInfo.url, size);
+        const resizedImageUrl = await resizeImageUrl(fixedImageUrl, size);
         setImageInfos((imageInfos) => ({
           ...imageInfos,
           [size]: {
