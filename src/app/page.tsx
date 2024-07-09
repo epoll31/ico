@@ -284,6 +284,11 @@ export default function Page() {
     }
   }, [dialogOpen]);
 
+  const toggleDialog = useCallback(() => {
+    setDialogOpen((dialogOpen) => !dialogOpen);
+    setInputUrl("");
+  }, [setDialogOpen]);
+
   return (
     <>
       <DropZone
@@ -293,60 +298,21 @@ export default function Page() {
         accept={InputFileTypes}
         onChange={loadImageUrlToAllSizes}
       >
-        <div className="flex-1 flex flex-col items-center justify-center gap-10 px-10 pt-10">
-          <div className="flex flex-col min-[750px]:flex-row items-center justify-center gap-10">
-            <div className="flex flex-col flex-1 h-full items-center justify-center">
-              <h1 className="text-4xl font-bold text-center">
-                Better ICO&rsquo;s
-              </h1>
-              <p className="text-xl text-center pt-1 text-balance">
-                Create and View ICO&rsquo;s with Ease
-              </p>
-            </div>
-            <div className="flex flex-col flex-1 h-full items-center justify-center gap-4">
-              <DropZone
-                onChange={loadImageUrlToAllSizes}
-                className="flex flex-col items-center justify-center shadow-xl-center rounded-2xl px-14 pt-10 pb-7 gap-5 bg-white"
-                allow="drop"
-                accept={InputFileTypes}
-                as="div"
-              >
-                <p className="font-semibold text-xl">Quick Create</p>
-                <DropZone
-                  as={MagneticButton}
-                  onChange={loadImageUrlToAllSizes}
-                  className="cursor-pointer bg-blue-500 text-white hover:scale-105 active:scale-95 rounded-full transition-all duration-200 shadow-lg flex items-center gap-2 px-4 py-2"
-                  allow="click"
-                  accept={InputFileTypes}
-                  tabIndex={dialogOpen ? -1 : 0}
-                >
-                  <Upload className="w-4 h-4" />
-                  <p className="whitespace-nowrap">Upload Image</p>
-                </DropZone>
-
-                <p className="text-gray-500">drop an image here</p>
-                <p className="text-gray-500 -mt-4 text-xs">
-                  or{" "}
-                  <button
-                    className=" underline"
-                    onClick={() => {
-                      setDialogOpen(true);
-                      setInputUrl("");
-                    }}
-                    tabIndex={dialogOpen ? -1 : 0}
-                  >
-                    from a URL
-                  </button>
-                </p>
-              </DropZone>
-            </div>
+        <div className="flex-1 flex flex-col items-center justify-center gap-10 px-10">
+          <div className="gap-4 grid grid-cols-2  min-[750px]:grid-cols-5">
+            <Header />
+            <QuickCreate
+              toggleDialog={toggleDialog}
+              dialogOpen={dialogOpen}
+              loadImageUrlToAllSizes={loadImageUrlToAllSizes}
+            />
+            <SizedDropZones
+              imageInfos={imageInfos}
+              updateImageInfo={updateImageInfo}
+              tabIndex={dialogOpen ? -1 : 0}
+              accept={InputFileTypes}
+            />
           </div>
-          <SizedDropZones
-            imageInfos={imageInfos}
-            updateImageInfo={updateImageInfo}
-            tabIndex={dialogOpen ? -1 : 0}
-            accept={InputFileTypes}
-          />
 
           <div className="flex items-center justify-center gap-5">
             <MagneticButton
@@ -427,5 +393,61 @@ export default function Page() {
         </div>
       </div>
     </>
+  );
+}
+
+function Header() {
+  return (
+    <div className="flex flex-col items-center justify-center col-span-2 min-[750px]:col-span-3">
+      <h1 className="text-4xl font-bold text-center">Better ICO&rsquo;s</h1>
+      <p className="text-xl text-center pt-1 text-balance">
+        Create and View ICO&rsquo;s with Ease
+      </p>
+    </div>
+  );
+}
+
+function QuickCreate({
+  toggleDialog,
+  dialogOpen,
+  loadImageUrlToAllSizes,
+}: {
+  toggleDialog: () => void;
+  dialogOpen: boolean;
+  loadImageUrlToAllSizes: (imageUrl: string) => void;
+}) {
+  return (
+    <DropZone
+      onChange={loadImageUrlToAllSizes}
+      className="col-span-2 flex flex-col items-center justify-center shadow-xl-center rounded-2xl px-14 pt-10 pb-7 gap-5 bg-white"
+      allow="drop"
+      accept={InputFileTypes}
+      as="div"
+    >
+      <p className="font-semibold text-xl">Quick Create</p>
+      <DropZone
+        as={MagneticButton}
+        onChange={loadImageUrlToAllSizes}
+        className="cursor-pointer bg-blue-500 text-white hover:scale-105 active:scale-95 rounded-full transition-all duration-200 shadow-lg flex items-center gap-2 px-4 py-2"
+        allow="click"
+        accept={InputFileTypes}
+        tabIndex={dialogOpen ? -1 : 0}
+      >
+        <Upload className="w-4 h-4" />
+        <p className="whitespace-nowrap">Upload Image</p>
+      </DropZone>
+
+      <p className="text-gray-500">drop an image here</p>
+      <p className="text-gray-500 -mt-4 text-xs">
+        or{" "}
+        <button
+          className=" underline"
+          onClick={toggleDialog}
+          tabIndex={dialogOpen ? -1 : 0}
+        >
+          from a URL
+        </button>
+      </p>
+    </DropZone>
   );
 }

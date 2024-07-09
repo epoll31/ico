@@ -4,7 +4,6 @@ import cn from "@/utils/cn";
 import ImagePreview from "./ImagePreview";
 import { Size, Sizes } from "@/lib/types";
 import { ImageInfo, ImageInfoMap } from "@/app/page";
-
 export default function SizedDropZones({
   imageInfos,
   updateImageInfo,
@@ -27,7 +26,7 @@ export default function SizedDropZones({
   };
 
   return (
-    <div className="gap-4 grid grid-cols-2  min-[750px]:grid-cols-5">
+    <>
       {Sizes.toReversed().map((size) => {
         const imageInfo = imageInfos[size];
 
@@ -45,6 +44,6 @@ export default function SizedDropZones({
           />
         );
       })}
-    </div>
+    </>
   );
 }
