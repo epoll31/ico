@@ -18,7 +18,8 @@
     "react-dom": "^18",
     "react-tooltip": "^5.27.1",
     "tailwind-merge": "^2.3.0",
-    "to-ico": "^1.1.5"
+    "to-ico": "^1.1.5",
+    "webp-converter-browser": "^1.0.4"
   },
   "devDependencies": {
     "@types/node": "^20",

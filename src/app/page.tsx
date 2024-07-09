@@ -15,6 +15,7 @@ import Download from "@/components/icons/download";
 import MagneticButton from "@/components/MagneticButton";
 import Check from "@/components/icons/check";
 import X from "@/components/icons/x";
+import { webpToPng } from "@/utils/webpToPng";
 
 export interface ImageInfo {
   url: string;
@@ -70,9 +71,15 @@ async function spreatICOImageUrlToImageInfoMap(
   }, spreadSizes<ImageInfo | null>(null));
 }
 
+async function spreadWEBPImageUrlToImageInfoMap(
+  imageUrl: string
+): Promise<ImageInfoMap> {
+  const pngImageUrl = await webpToPng(imageUrl);
+  return spreadImageUrlToImageInfoMap(pngImageUrl);
+}
+
 async function imageUrlToImageInfoMap(imageUrl: string): Promise<ImageInfoMap> {
   //TODO: add support for TIFF // technically works with image-js but something is wrong with the result
-  //TODO: add support for WEBP
   //TODO: add support for SVG
   //TODO: add support for AVIF
   //TODO: add support for HEIC
@@ -92,6 +99,8 @@ async function imageUrlToImageInfoMap(imageUrl: string): Promise<ImageInfoMap> {
     blob.type === "image/vnd.microsoft.icon"
   ) {
     return spreatICOImageUrlToImageInfoMap(imageUrl);
+  } else if (blob.type === "image/webp") {
+    return spreadWEBPImageUrlToImageInfoMap(imageUrl);
   } else {
     throw new Error("Unsupported file type");
   }
