@@ -111,6 +111,7 @@ async function downloadImageInfoMap(imageInfos: ImageInfoMap) {
     console.error("Error:", error);
   }
 }
+
 function isValidUrl(url: string) {
   try {
     new URL(url);
@@ -119,12 +120,13 @@ function isValidUrl(url: string) {
     return false;
   }
 }
+
 export default function Page() {
   const [imageInfos, setImageInfos] = useState<ImageInfoMap>(
     spreadSizes<ImageInfo | null>(null)
   );
 
-  const [dialogOpen, setDialogOpen] = useState(false); // TODO: ignore scroll when dialog is open
+  const [dialogOpen, setDialogOpen] = useState(false);
   const [inputUrl, setInputUrl] = useState("");
 
   const loadImageUrlToAllSizes = useCallback(
@@ -191,6 +193,14 @@ export default function Page() {
     });
   }, []);
 
+  useEffect(() => {
+    if (dialogOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+  }, [dialogOpen]);
+
   return (
     <>
       <DropZone
@@ -199,8 +209,8 @@ export default function Page() {
         allow="drop"
         onChange={loadImageUrlToAllSizes}
       >
-        <div className="flex-1 flex flex-col items-center justify-center gap-10 px-10">
-          <div className="flex  items-center justify-center gap-10">
+        <div className="flex-1 flex flex-col items-center justify-center gap-10 px-10 pt-10">
+          <div className="flex flex-col min-[750px]:flex-row items-center justify-center gap-10">
             <div className="flex flex-col flex-1 h-full items-center justify-center">
               <h1 className="text-4xl font-bold text-center">
                 Better ICO&rsquo;s
@@ -272,7 +282,7 @@ export default function Page() {
         role="dialog"
         aria-modal="true"
         className={cn(
-          "fixed bottom-0 left-0 right-0 top-0 z-50 flex items-center justify-center backdrop-blur-[2px] transition-all",
+          "fixed bottom-0 left-0 right-0 top-0 z-50 flex items-center justify-center backdrop-blur-[2px] transition-all m-10",
           dialogOpen ? "opacity-100" : "opacity-0 pointer-events-none"
         )}
         onClick={() => {
@@ -284,7 +294,9 @@ export default function Page() {
           className="flex flex-col items-center justify-center shadow-xl-center rounded-2xl px-14 pt-10 pb-10 gap-5 bg-white "
           onClick={(event) => event.stopPropagation()}
         >
-          <p className="text-xl font-bold">Enter a URL to load an image</p>
+          <p className="text-xl font-bold text-balance text-center">
+            Enter a URL to load an image
+          </p>
 
           <input
             tabIndex={dialogOpen ? 0 : -1}
