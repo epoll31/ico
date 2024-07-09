@@ -41,8 +41,6 @@ const DropZone = forwardRef(
         if (file) {
           const url = URL.createObjectURL(file);
           onChange?.(url, "click");
-        } else {
-          throw new Error("No file selected");
         }
       };
     };
@@ -61,8 +59,6 @@ const DropZone = forwardRef(
         if (file) {
           const url = URL.createObjectURL(file);
           onChange?.(url, "drop");
-        } else {
-          throw new Error("No file selected");
         }
       }
     };

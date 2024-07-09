@@ -35,13 +35,11 @@ export default function Make() {
         body: formData,
       });
 
-      if (!response.ok) {
-        throw new Error("HTTP error: status code " + response.status);
+      if (response.ok) {
+        const result = await response.blob();
+
+        setResultFile(new File([result], "icon.ico", { type: "image/x-icon" }));
       }
-
-      const result = await response.blob();
-
-      setResultFile(new File([result], "icon.ico", { type: "image/x-icon" }));
     } catch (error) {
       console.error("Error:", error);
     }
