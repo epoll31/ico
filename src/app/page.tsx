@@ -3,7 +3,7 @@
 import DropZone from "@/components/DropZone";
 import SizedDropZones from "@/components/SizedDropZones";
 import Upload from "@/components/icons/upload";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { icoToImageUrls } from "@/utils/decodeImage";
 import { Size, Sizes } from "@/lib/types";
 import downloadBlobAsFile from "@/utils/downloadBlobAsFile";
@@ -442,6 +442,7 @@ function QuickCreate({
     </DropZone>
   );
 }
+
 function DownloadButton({
   reqestDownload,
   disabled,
@@ -451,20 +452,64 @@ function DownloadButton({
   disabled: boolean;
   dialogOpen: boolean;
 }) {
+  const [isFixed, setIsFixed] = useState(false);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (buttonRef.current) {
+        const rect = buttonRef.current.getBoundingClientRect();
+        const isOffScreen = rect.top >= window.innerHeight || rect.bottom <= 0;
+        setIsFixed(isOffScreen);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    handleScroll(); // Check initial position
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [buttonRef]);
+
   return (
-    <MagneticButton
-      onClick={reqestDownload}
-      disabled={disabled}
-      className={cn(
-        " text-white px-4 py-2 rounded-full transition-all duration-200 shadow-lg flex items-center gap-2 ",
-        disabled
-          ? "cursor-not-allowed bg-gray-300 text-gray-600"
-          : "cursor-pointer bg-blue-500 text-white hover:scale-105 active:scale-95"
-      )}
-      tabIndex={dialogOpen ? -1 : 0}
-    >
-      <Download className="w-4 h-4" />
-      Download
-    </MagneticButton>
+    <>
+      <MagneticButton
+        ref={buttonRef}
+        onClick={reqestDownload}
+        disabled={disabled}
+        className={cn(
+          " text-white px-4 py-2 rounded-full transition-all duration-200 shadow-lg flex items-center gap-2 ",
+          disabled
+            ? "cursor-not-allowed bg-gray-300 text-gray-600"
+            : "cursor-pointer bg-blue-500 text-white hover:scale-105 active:scale-95"
+        )}
+        tabIndex={dialogOpen ? -1 : isFixed ? -1 : 0}
+      >
+        <Download className="w-4 h-4" />
+        <p>Download</p>
+      </MagneticButton>
+
+      <button
+        onClick={reqestDownload}
+        disabled={disabled}
+        className={cn(
+          "fixed bottom-0 right-0 aspect-square",
+          isFixed ? "m-4 w-12 h-12 opacity-100" : "m-0 w-0 h-0 opacity-0",
+          " text-white rounded-full transition-all duration-200 shadow-lg flex items-center justify-center",
+          disabled
+            ? "cursor-not-allowed bg-gray-300 text-gray-600"
+            : "cursor-pointer bg-blue-500 text-white hover:scale-105 active:scale-95"
+        )}
+        tabIndex={dialogOpen ? -1 : isFixed ? 0 : -1}
+      >
+        <Download
+          className={cn(
+            "transition-all duration-200",
+            isFixed ? "w-5 h-5" : "w-0 h-0"
+          )}
+        />
+      </button>
+    </>
   );
 }
