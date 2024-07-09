@@ -329,7 +329,7 @@ export default function Page() {
         role="dialog"
         aria-modal="true"
         className={cn(
-          "fixed bottom-0 left-0 right-0 top-0 z-50 flex items-center justify-center backdrop-blur-[2px] transition-all m-10",
+          "fixed bottom-0 left-0 right-0 top-0 z-50 flex items-center justify-center backdrop-blur-[2px] transition-all",
           dialogOpen ? "opacity-100" : "opacity-0 pointer-events-none"
         )}
         onClick={() => {
