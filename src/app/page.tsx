@@ -87,7 +87,7 @@ async function spreadWEBPImageUrlToImageInfoMap(
 async function spreadSVGImageUrlToImageInfoMap(
   imageUrl: string
 ): Promise<ImageInfoMap> {
-  const pngImageUrl = await svgToPng(imageUrl);
+  const pngImageUrl = await svgToPng(imageUrl, 256);
   return spreadImageUrlToImageInfoMap(pngImageUrl);
 }
 
