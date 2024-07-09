@@ -9,10 +9,12 @@ export default function SizedDropZones({
   imageInfos,
   updateImageInfo,
   tabIndex,
+  accept = "*/*",
 }: {
   imageInfos: ImageInfoMap;
   updateImageInfo: (size: Size, imageInfo: ImageInfo | null) => void;
   tabIndex?: number;
+  accept?: string;
 }) {
   const sizes: Record<Size, string> = {
     [256]: "col-span-2 min-[750px]:col-span-3",
@@ -39,6 +41,7 @@ export default function SizedDropZones({
             updateImageInfo={(imageInfo: ImageInfo) =>
               updateImageInfo(size, imageInfo)
             }
+            accept={accept}
           />
         );
       })}

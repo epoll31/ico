@@ -11,6 +11,7 @@ const DropZone = forwardRef(
       dataTooltipDelayShow,
       dataTooltipDelayHide,
       tabIndex,
+      accept = "*/*",
       as: Component = "button",
     }: {
       className?: string;
@@ -21,6 +22,7 @@ const DropZone = forwardRef(
       dataTooltipDelayShow?: number;
       dataTooltipDelayHide?: number;
       tabIndex?: number;
+      accept?: string;
       as?: React.ElementType;
     },
     ref: React.Ref<HTMLButtonElement>
@@ -28,7 +30,7 @@ const DropZone = forwardRef(
     const requestFile = () => {
       const fileInput = document.createElement("input");
       fileInput.type = "file";
-      fileInput.accept = "image/*";
+      fileInput.accept = accept;
       fileInput.style.display = "none";
       fileInput.multiple = false;
 

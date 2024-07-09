@@ -13,12 +13,14 @@ export default function ImagePreview({
   imageInfo,
   updateImageInfo,
   tabIndex,
+  accept = "*/*",
 }: {
   className?: string;
   size: Size;
   imageInfo: ImageInfo | null;
   updateImageInfo: (imageInfo: ImageInfo) => void;
   tabIndex?: number;
+  accept?: string;
 }) {
   return (
     <>
@@ -52,6 +54,7 @@ export default function ImagePreview({
             dataTooltipDelayHide={100}
             dataTooltipDelayShow={300}
             tabIndex={tabIndex}
+            accept={accept}
           >
             {imageInfo ? (
               <Image

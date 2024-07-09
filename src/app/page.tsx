@@ -25,6 +25,11 @@ export interface ImageInfo {
 
 export type ImageInfoMap = Record<Size, ImageInfo | null>;
 
+const InputFileMimeTypes =
+  "image/png,image/jpeg,image/jpg,image/webp,image/svg+xml,image/x-icon,image/vnd.microsoft.icon";
+const InputFileExtensions = "png,jpg,jpeg,webp,svg,ico";
+export const InputFileTypes = `${InputFileMimeTypes},${InputFileExtensions}`;
+
 async function spreadImageUrlToImageInfoMap(
   imageUrl: string
 ): Promise<ImageInfoMap> {
@@ -242,6 +247,7 @@ export default function Page() {
         as="div"
         className="flex flex-col items-center w-full h-screen"
         allow="drop"
+        accept={InputFileTypes}
         onChange={loadImageUrlToAllSizes}
       >
         <div className="flex-1 flex flex-col items-center justify-center gap-10 px-10 pt-10">
@@ -259,6 +265,7 @@ export default function Page() {
                 onChange={loadImageUrlToAllSizes}
                 className="flex flex-col items-center justify-center shadow-xl-center rounded-2xl px-14 pt-10 pb-7 gap-5 bg-white"
                 allow="drop"
+                accept={InputFileTypes}
                 as="div"
               >
                 <p className="font-semibold text-xl">Quick Create</p>
@@ -267,6 +274,7 @@ export default function Page() {
                   onChange={loadImageUrlToAllSizes}
                   className="cursor-pointer bg-blue-500 text-white hover:scale-105 active:scale-95 rounded-full transition-all duration-200 shadow-lg flex items-center gap-2 px-4 py-2"
                   allow="click"
+                  accept={InputFileTypes}
                   tabIndex={dialogOpen ? -1 : 0}
                 >
                   <Upload className="w-4 h-4" />
@@ -291,6 +299,7 @@ export default function Page() {
             imageInfos={imageInfos}
             updateImageInfo={updateImageInfo}
             tabIndex={dialogOpen ? -1 : 0}
+            accept={InputFileTypes}
           />
 
           <div className="flex items-center justify-center gap-5">
