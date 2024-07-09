@@ -22,7 +22,7 @@ export default function Toggle({
       return;
     }
     setToggled?.(!toggled);
-  }, [toggled, setToggled]);
+  }, [toggled, setToggled, disabled]);
 
   return (
     <button

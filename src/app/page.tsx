@@ -28,7 +28,7 @@ export type ImageInfoMap = Record<Size, ImageInfo | null>;
 const InputFileMimeTypes =
   "image/png,image/jpeg,image/jpg,image/webp,image/svg+xml,image/x-icon,image/vnd.microsoft.icon";
 const InputFileExtensions = "png,jpg,jpeg,webp,svg,ico";
-export const InputFileTypes = `${InputFileMimeTypes},${InputFileExtensions}`;
+const InputFileTypes = `${InputFileMimeTypes},${InputFileExtensions}`;
 
 async function spreadImageUrlToImageInfoMap(
   imageUrl: string
@@ -265,7 +265,7 @@ export default function Page() {
       setInputUrl("");
       setDialogOpen(false);
     }
-  }, [validInputUrl, inputUrl]);
+  }, [validInputUrl, inputUrl, loadImageUrlToAllSizes]);
 
   useEffect(() => {
     document.addEventListener("keydown", (event) => {

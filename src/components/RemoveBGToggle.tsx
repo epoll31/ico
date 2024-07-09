@@ -20,7 +20,7 @@ export default function RemoveBGToggle({
       return;
     }
     setToggled?.(!toggled);
-  }, [toggled, setToggled]);
+  }, [toggled, setToggled, disabled]);
 
   return (
     <button

@@ -86,4 +86,5 @@ const DropZone = forwardRef(
   }
 );
 
+DropZone.displayName = "DropZone";
 export default DropZone;
