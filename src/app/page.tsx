@@ -263,6 +263,7 @@ export default function Page() {
     if (validInputUrl) {
       loadImageUrlToAllSizes(inputUrl);
       setInputUrl("");
+      setDialogOpen(false);
     }
   }, [validInputUrl, inputUrl]);
 
@@ -270,6 +271,7 @@ export default function Page() {
     document.addEventListener("keydown", (event) => {
       if (event.key === "Escape") {
         setDialogOpen(false);
+        setInputUrl("");
       }
     });
   }, []);
@@ -327,7 +329,10 @@ export default function Page() {
                   or{" "}
                   <button
                     className=" underline"
-                    onClick={() => setDialogOpen(true)}
+                    onClick={() => {
+                      setDialogOpen(true);
+                      setInputUrl("");
+                    }}
                     tabIndex={dialogOpen ? -1 : 0}
                   >
                     from a URL
@@ -388,6 +393,7 @@ export default function Page() {
             onChange={updateInputUrl}
             type="url"
             className="w-full rounded-xl border-2 border-gray-300 px-4 py-2 text-lg"
+            value={inputUrl}
           />
 
           <div className="flex items-center justify-center gap-5">
