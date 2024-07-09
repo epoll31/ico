@@ -315,20 +315,11 @@ export default function Page() {
           </div>
 
           <div className="flex items-center justify-center gap-5">
-            <MagneticButton
-              onClick={handleDownloadRequest}
+            <DownloadButton
+              reqestDownload={handleDownloadRequest}
               disabled={isDownloadDisabled}
-              className={cn(
-                " text-white px-4 py-2 rounded-full transition-all duration-200 shadow-lg flex items-center gap-2 ",
-                isDownloadDisabled
-                  ? "cursor-not-allowed bg-gray-300 text-gray-600"
-                  : "cursor-pointer bg-blue-500 text-white hover:scale-105 active:scale-95"
-              )}
-              tabIndex={dialogOpen ? -1 : 0}
-            >
-              <Download className="w-4 h-4" />
-              Download
-            </MagneticButton>
+              dialogOpen={dialogOpen}
+            />
           </div>
         </div>
         <Footer tabIndex={dialogOpen ? -1 : 0} />
@@ -449,5 +440,31 @@ function QuickCreate({
         </button>
       </p>
     </DropZone>
+  );
+}
+function DownloadButton({
+  reqestDownload,
+  disabled,
+  dialogOpen,
+}: {
+  reqestDownload: () => void;
+  disabled: boolean;
+  dialogOpen: boolean;
+}) {
+  return (
+    <MagneticButton
+      onClick={reqestDownload}
+      disabled={disabled}
+      className={cn(
+        " text-white px-4 py-2 rounded-full transition-all duration-200 shadow-lg flex items-center gap-2 ",
+        disabled
+          ? "cursor-not-allowed bg-gray-300 text-gray-600"
+          : "cursor-pointer bg-blue-500 text-white hover:scale-105 active:scale-95"
+      )}
+      tabIndex={dialogOpen ? -1 : 0}
+    >
+      <Download className="w-4 h-4" />
+      Download
+    </MagneticButton>
   );
 }
