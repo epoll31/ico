@@ -8,9 +8,11 @@ import { ImageInfo, ImageInfoMap } from "@/app/page";
 export default function SizedDropZones({
   imageInfos,
   updateImageInfo,
+  tabIndex,
 }: {
   imageInfos: ImageInfoMap;
   updateImageInfo: (size: Size, imageInfo: ImageInfo | null) => void;
+  tabIndex?: number;
 }) {
   const sizes: Record<Size, string> = {
     [256]: "col-span-2 min-[750px]:col-span-3",
@@ -29,6 +31,7 @@ export default function SizedDropZones({
 
         return (
           <ImagePreview
+            tabIndex={tabIndex}
             key={size}
             className={cn(sizes[size], "")}
             size={size}

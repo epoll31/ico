@@ -12,11 +12,13 @@ export default function ImagePreview({
   size,
   imageInfo,
   updateImageInfo,
+  tabIndex,
 }: {
   className?: string;
   size: Size;
   imageInfo: ImageInfo | null;
   updateImageInfo: (imageInfo: ImageInfo) => void;
+  tabIndex?: number;
 }) {
   return (
     <>
@@ -49,6 +51,7 @@ export default function ImagePreview({
             dataTooltipId="tooltip"
             dataTooltipDelayHide={100}
             dataTooltipDelayShow={300}
+            tabIndex={tabIndex}
           >
             {imageInfo ? (
               <Image
@@ -85,6 +88,7 @@ export default function ImagePreview({
                   });
                 }
               }}
+              tabIndex={tabIndex}
             />
           </div>
         </div>

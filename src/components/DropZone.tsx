@@ -10,6 +10,7 @@ const DropZone = forwardRef(
       dataTooltipId,
       dataTooltipDelayShow,
       dataTooltipDelayHide,
+      tabIndex,
       as: Component = "button",
     }: {
       className?: string;
@@ -19,6 +20,7 @@ const DropZone = forwardRef(
       dataTooltipId?: string;
       dataTooltipDelayShow?: number;
       dataTooltipDelayHide?: number;
+      tabIndex?: number;
       as?: React.ElementType;
     },
     ref: React.Ref<HTMLButtonElement>
@@ -78,6 +80,7 @@ const DropZone = forwardRef(
         data-tooltip-delay-show={dataTooltipDelayShow}
         data-tooltip-delay-hide={dataTooltipDelayHide}
         ref={ref}
+        tabIndex={tabIndex}
       >
         {children}
       </Component>

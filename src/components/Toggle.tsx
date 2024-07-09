@@ -9,10 +9,12 @@ export default function Toggle({
   toggled = false,
   disabled = false,
   setToggled,
+  tabIndex,
 }: {
   toggled?: boolean;
   disabled?: boolean;
   setToggled?: (toggled: boolean) => void;
+  tabIndex?: number;
 }) {
   const handleToggle = useCallback(() => {
     if (disabled) {
@@ -31,6 +33,7 @@ export default function Toggle({
       )}
       onClick={handleToggle}
       disabled={disabled}
+      tabIndex={tabIndex}
     >
       <span
         className={cn(

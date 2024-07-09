@@ -11,11 +11,13 @@ export default function MagneticButton({
   onClick,
   children,
   disabled,
+  tabIndex,
 }: {
   className?: string;
   children: React.ReactNode;
   onClick?: MouseEventHandler<HTMLButtonElement>;
   disabled?: boolean;
+  tabIndex?: number;
 }) {
   const ref = useRef<HTMLButtonElement>(null);
   const [position, setPosition] = useState<Position>({ x: 0, y: 0 });
@@ -60,6 +62,7 @@ export default function MagneticButton({
       )}
       style={{ willChange: "transform" }}
       disabled={disabled}
+      tabIndex={tabIndex}
     >
       {children}
     </button>

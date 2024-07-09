@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Github from "./icons/github";
 
-export default function Footer() {
+export default function Footer({ tabIndex }: { tabIndex?: number }) {
   return (
     <footer className="flex  items-center justify-center gap-4 p-10">
       <p className="text-center text-sm">
@@ -11,6 +11,7 @@ export default function Footer() {
           target="_blank"
           rel="noreferrer"
           className="hover:text-blue-500 transition-colors"
+          tabIndex={tabIndex}
         >
           Ethan Pollack
         </Link>
@@ -20,6 +21,7 @@ export default function Footer() {
         href="https://github.com/epoll31/ico"
         target="_blank"
         rel="noreferrer"
+        tabIndex={tabIndex}
       >
         <Github className="w-6 h-6 m-0.5 hover:text-blue-500 transition-colors" />
       </Link>
