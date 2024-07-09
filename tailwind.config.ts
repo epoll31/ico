@@ -41,6 +41,11 @@ const config: Config = {
       backgroundPosition: {
         checkered: "0 0, 0 10px, 10px -10px, -10px 0",
       },
+      boxShadow: {
+        "xl-center":
+          "0 0 25px -5px rgb(0 0 0 / 0.1), 0 0 10px -6px rgb(0 0 0 / 0.1)",
+        center: "0 0 3px 0 rgb(0 0 0 / 0.1), 0 0 2px 0 rgb(0 0 0 / 0.1)",
+      },
     },
   },
   plugins: [],

@@ -22,7 +22,8 @@ export default function ImagePreview({
     <>
       <div
         className={cn(
-          "relative min-w-fit h-full bg-white shadow-xl rounded-2xl flex flex-col items-center justify-between px-4 pt-4 pb-4",
+          "relative min-w-fit h-full bg-white rounded-2xl flex flex-col items-center justify-between px-4 pt-4 pb-4 transition-shadow",
+          imageInfo?.active ? "shadow-xl-center" : " shadow-none",
           className
         )}
       >

@@ -12,6 +12,7 @@ import spreadSizes from "@/utils/spreadSizes";
 import cn from "@/utils/cn";
 import Footer from "@/components/Footer";
 import Download from "@/components/icons/download";
+import MagneticButton from "@/components/MagneticButton";
 
 export interface ImageInfo {
   url: string;
@@ -156,23 +157,32 @@ export default function Page() {
   );
 
   return (
-    <div className="flex flex-col items-center w-full h-screen">
+    <DropZone
+      as="div"
+      className="flex flex-col items-center w-full h-screen"
+      allow="drop"
+      onChange={loadImageUrlToAllSizes}
+    >
       <div className="flex-1 flex flex-col items-center justify-center gap-10 px-10">
         <div className="flex  items-center justify-center gap-10">
           <div className="flex flex-col flex-1 h-full items-center justify-center">
             <h1 className="text-4xl font-bold text-center">
-              ICO&rsquo;s Better Than Ever
+              Better ICO&rsquo;s
             </h1>
-            <p className="text-2xl text-center">Lorem ipsum dolor sit amet.</p>
+            <p className="text-xl text-center pt-1 text-balance">
+              Create and View ICO&rsquo;s with Ease
+            </p>
           </div>
           <div className="flex flex-col flex-1 h-full items-center justify-center gap-4">
             <DropZone
               onChange={loadImageUrlToAllSizes}
-              className="flex flex-col items-center justify-center shadow-xl rounded-2xl px-14 pt-14 pb-7 gap-5 bg-white"
+              className="flex flex-col items-center justify-center shadow-xl-center rounded-2xl px-14 pt-10 pb-10 gap-5 bg-white"
               allow="drop"
               as="div"
             >
+              <p className="font-semibold text-xl">Quick Create</p>
               <DropZone
+                as={MagneticButton}
                 onChange={loadImageUrlToAllSizes}
                 className="cursor-pointer bg-blue-500 text-white hover:scale-105 active:scale-95 rounded-full transition-all duration-200 shadow-lg flex items-center gap-2 px-4 py-2"
                 allow="click"
@@ -191,7 +201,7 @@ export default function Page() {
         />
 
         <div className="flex items-center justify-center gap-5">
-          <button
+          <MagneticButton
             onClick={handleDownloadRequest}
             disabled={isDownloadDisabled}
             className={cn(
@@ -203,10 +213,10 @@ export default function Page() {
           >
             <Download className="w-4 h-4" />
             Download
-          </button>
+          </MagneticButton>
         </div>
       </div>
       <Footer />
-    </div>
+    </DropZone>
   );
 }
