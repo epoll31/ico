@@ -456,7 +456,7 @@ function DownloadButton({
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    const handleScroll = () => {
+    const updateIsFixed = () => {
       if (buttonRef.current) {
         const rect = buttonRef.current.getBoundingClientRect();
         const isOffScreen = rect.top >= window.innerHeight || rect.bottom <= 0;
@@ -464,11 +464,13 @@ function DownloadButton({
       }
     };
 
-    window.addEventListener("scroll", handleScroll);
-    handleScroll(); // Check initial position
+    window.addEventListener("scroll", updateIsFixed);
+    window.addEventListener("resize", updateIsFixed);
+    updateIsFixed(); // Check initial position
 
     return () => {
-      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("scroll", updateIsFixed);
+      window.removeEventListener("resize", updateIsFixed);
     };
   }, [buttonRef]);
 
