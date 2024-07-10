@@ -26,12 +26,14 @@ export default function ImagePreview({
     <>
       <div
         className={cn(
-          "relative min-w-fit h-full bg-white rounded-2xl flex flex-col items-center justify-between px-4 pt-4 pb-4 transition-shadow",
-          imageInfo?.active ? "shadow-xl-center" : " shadow-none",
+          "relative min-w-fit h-full rounded-2xl flex flex-col items-center justify-between px-4 pt-4 pb-4 transition-all duration-200",
+          imageInfo?.active
+            ? "shadow-xl-center bg-white "
+            : "shadow-none bg-gray-50",
           className
         )}
       >
-        <p className="text-lg pb-2">
+        <p className={"text-lg pb-2 text-gray-400"}>
           {size}x{size}
         </p>
 

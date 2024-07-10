@@ -389,7 +389,7 @@ export default function Page() {
 
 function Header() {
   return (
-    <div className="flex flex-col items-center justify-center col-span-2 min-[750px]:col-span-3">
+    <div className="flex flex-col items-center justify-center col-span-full min-[750px]:col-span-full my-5">
       <h1 className="text-4xl font-bold text-center">Better ICO&rsquo;s</h1>
       <p className="text-xl text-center pt-1 text-balance">
         Create and View ICO&rsquo;s with Ease
@@ -410,7 +410,7 @@ function QuickCreate({
   return (
     <DropZone
       onChange={loadImageUrlToAllSizes}
-      className="col-span-2 flex flex-col items-center justify-center shadow-xl-center rounded-2xl px-14 pt-10 pb-7 gap-5 bg-white"
+      className="col-span-full flex flex-col items-center justify-center shadow-xl-center rounded-2xl px-14 pt-10 pb-7 gap-5 bg-white"
       allow="drop"
       accept={InputFileTypes}
       as="div"
@@ -481,14 +481,14 @@ function DownloadButton({
         onClick={reqestDownload}
         disabled={disabled}
         className={cn(
-          " text-white px-4 py-2 rounded-full transition-all duration-200 shadow-lg flex items-center gap-2 ",
+          " text-white text-xl px-6 py-3 rounded-full transition-all duration-200 shadow-lg flex items-center gap-2 ",
           disabled
             ? "cursor-not-allowed bg-gray-300 text-gray-600"
             : "cursor-pointer bg-blue-500 text-white hover:scale-105 active:scale-95"
         )}
         tabIndex={dialogOpen ? -1 : isFixed ? -1 : 0}
       >
-        <Download className="w-4 h-4" />
+        <Download className="w-5 h-5" strokeWidth={2.5} />
         <p>Download</p>
       </MagneticButton>
 
