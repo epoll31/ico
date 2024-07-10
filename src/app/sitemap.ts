@@ -3,7 +3,7 @@ import path from "path";
 import fs from "fs";
 
 const rootDir = path.join(process.cwd(), "src/app");
-const baseUrl = "localhost:3000";
+const baseUrl = "localhost:3000"; //TODO: fix this
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const urls: MetadataRoute.Sitemap = [];
