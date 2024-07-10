@@ -1,6 +1,6 @@
 import { MetadataRoute } from "next";
 
-const baseUrl = "localhost:3000"; //TODO: fix this
+const baseUrl = "https://icomaker.app";
 
 export default function robots(): MetadataRoute.Robots {
   return {

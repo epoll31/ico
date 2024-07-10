@@ -14,7 +14,7 @@ ICO Generator is a web application that allows users to create ICO (Icon) files 
 
 ## How to Use
 
-1. Visit [ICO Generator Website URL] <!-- TODO: Add website URL -->
+1. Visit [ICO Generator Website URL](https://icomaker.app)
 2. Upload an image file (PNG, ICO, SVG, JPEG, JPG, or WebP) using the file input.
 3. Select the desired icon sizes from the available options.
 4. (Optional) Upload specific images for individual icon sizes if needed.
