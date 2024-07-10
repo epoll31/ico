@@ -7,8 +7,22 @@ import cn from "@/utils/cn";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "ICO Generator",
+  title: "ICO Maker",
   description: "Create and View ICO's with Ease",
+  authors: {
+    name: "Ethan Pollack",
+    url: "https://epoll31.com",
+  },
+  keywords: [
+    "ICO",
+    "Icon",
+    "Image",
+    "Maker",
+    "Generator",
+    "Converter",
+    "ico",
+    "Ico",
+  ],
 };
 
 export default function RootLayout({
