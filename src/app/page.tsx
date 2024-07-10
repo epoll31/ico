@@ -505,12 +505,7 @@ function DownloadButton({
         )}
         tabIndex={dialogOpen ? -1 : isFixed ? 0 : -1}
       >
-        <Download
-          className={cn(
-            "transition-all duration-200",
-            isFixed ? "w-5 h-5" : "w-0 h-0"
-          )}
-        />
+        <Download className={"w-5 h-5"} />
       </button>
     </>
   );
